@@ -16,6 +16,8 @@ This repository documents the design, implementation, testing, and deployment of
 - `tests/`: Functional and subsystem test results
 - `logistics/`: Team info, shipping, on-site planning
 - `funding/`: Budget, sponsorships, and funding plan
+- `meetings/`: Internal meeting notes, agendas, and design discussions
+- `media/`: Images, video clips, and diagrams for presentations or documentation
 
 ## 🚀 Getting Started
 
