@@ -1,7 +1,6 @@
-# uatx-tbm
-Designing a vertical TBM for the 2026 Mini Digging Competition at Bastrop.
+Building a TBM for the 2026 Mini Digging Competition at Bastrop.
 
-# UATX TBM - Not-a-Boring Competition 2026
+# UATXcavators - Not-a-Boring Competition 2026
 
 This repository documents the design, implementation, testing, and deployment of the UATX tunnel boring machine (TBM) for the 2026 Not-a-Boring Competition, Digging Mini Competition division.
 
