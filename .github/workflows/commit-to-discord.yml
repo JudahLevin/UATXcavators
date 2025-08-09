@@ -1,28 +1,90 @@
-name: Send commits to Discord
+name: Commit → Discord with AI explanation (@everyone)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]   # change if your default branch is different
 
 jobs:
-  notify:
+  explain-and-post:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    permissions:
+      contents: read
 
-      - name: Send commit messages to Discord
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: https://discord.com/api/v10/channels/${{ secrets.DISCORD_CHANNEL_ID }}/messages
-          method: POST
-          customHeaders: |
-            {
-              "Authorization": "Bot ${{ secrets.DISCORD_BOT_TOKEN }}",
-              "Content-Type": "application/json"
-            }
-          data: |
-            {
-              "content": "📢 **New Commit** by ${{ github.actor }}:\n${{ github.event.head_commit.message }}"
-            }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect commit info + diff
+        id: info
+        shell: bash
+        run: |
+          echo "SHA=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "REPO=${GITHUB_REPOSITORY}" >> $GITHUB_OUTPUT
+          echo "ACTOR=${GITHUB_ACTOR}" >> $GITHUB_OUTPUT
+          echo "TITLE<<EOF" >> $GITHUB_OUTPUT
+          git log -1 --pretty=%s >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "BODY<<EOF" >> $GITHUB_OUTPUT
+          git log -1 --pretty=%b >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE=$(git rev-parse HEAD~1 || echo "")
+          fi
+
+          if [ -n "$BEFORE" ]; then
+            git diff --name-only "$BEFORE" "$GITHUB_SHA" > changed_files.txt
+            git diff --no-color --unified=0 "$BEFORE" "$GITHUB_SHA" > diff.txt
+          else
+            git show --name-only --pretty="" "$GITHUB_SHA" > changed_files.txt
+            git show --no-color --unified=0 "$GITHUB_SHA" > diff.txt
+          fi
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Explain commit + post to Discord (@everyone)
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REPO: ${{ steps.info.outputs.REPO }}
+          SHA: ${{ steps.info.outputs.SHA }}
+          TITLE: ${{ steps.info.outputs.TITLE }}
+          BODY: ${{ steps.info.outputs.BODY }}
+          ACTOR: ${{ steps.info.outputs.ACTOR }}
+        run: |
+          cat > post_commit.py << 'PY'
+import os, json, requests, textwrap
+
+repo   = os.environ["REPO"]
+sha    = os.environ["SHA"]
+title  = os.environ.get("TITLE","").strip()
+body   = os.environ.get("BODY","").strip()
+actor  = os.environ.get("ACTOR","").strip()
+channel_id = os.environ["DISCORD_CHANNEL_ID"]
+bot_token  = os.environ["DISCORD_BOT_TOKEN"]
+openai_key = os.environ.get("OPENAI_API_KEY")
+
+def read(path):
+    try:
+        with open(path,"r",encoding="utf-8",errors="ignore") as f: return f.read()
+    except: return ""
+
+changed = [l.strip() for l in read("changed_files.txt").splitlines() if l.strip()]
+files_preview = ", ".join(changed[:6]) + (" …" if len(changed) > 6 else "") if changed else "(no files listed)"
+diff = read("diff.txt")[:6000]  # trim for cost/safety
+
+def fallback_explanation():
+    lines = [f"• Summary: {title or '(no title)'}"]
+    if body:
+        lines.append("• Notes: " + body.splitlines()[0])
+    lines.append(f"• Files: {files_preview}")
+    lines.append("• Follow-ups: run tests/checks for affected parts.")
+    return "\n".join(lines)
+
+def explain_with_openai(prompt: str) -> str:
+    # OpenAI R
