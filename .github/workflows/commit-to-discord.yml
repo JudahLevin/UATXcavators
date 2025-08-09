@@ -1,93 +1,106 @@
-name: Commit to Discord (AI, @everyone)
+name: AI Commit Bot (minimal)
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  explain-and-post:
+  post:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Gather commit info + diff
-        id: info
-        shell: bash
-        run: |
-          set -e
-          echo "SHA=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-          echo "REPO=${GITHUB_REPOSITORY}" >> $GITHUB_OUTPUT
-          echo "ACTOR=${GITHUB_ACTOR}" >> $GITHUB_OUTPUT
-
-          {
-            echo "TITLE<<'__EOF__'"
-            git log -1 --pretty=%s
-            echo "__EOF__"
-            echo "BODY<<'__EOF__'"
-            git log -1 --pretty=%b
-            echo "__EOF__"
-          } >> "$GITHUB_OUTPUT"
-
-          BEFORE="${{ github.event.before }}"
-          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            BEFORE=$(git rev-parse HEAD~1 || echo "")
-          fi
-
-          if [ -n "$BEFORE" ]; then
-            git diff --name-only "$BEFORE" "$GITHUB_SHA" > changed_files.txt
-            git diff --no-color --unified=0 "$BEFORE" "$GITHUB_SHA" > diff.txt
-          else
-            git show --name-only --pretty="" "$GITHUB_SHA" > changed_files.txt
-            git show --no-color --unified=0 "$GITHUB_SHA" > diff.txt
-          fi
-
-      - name: Explain + post to Discord (@everyone)
+      - name: Post AI explanation to Discord (@everyone)
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          REPO: ${{ steps.info.outputs.REPO }}
-          SHA: ${{ steps.info.outputs.SHA }}
-          TITLE: ${{ steps.info.outputs.TITLE }}
-          BODY: ${{ steps.info.outputs.BODY }}
-          ACTOR: ${{ steps.info.outputs.ACTOR }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         shell: bash
         run: |
+          # write brief diff to a file (keeps YAML simple)
+          git show --no-color --unified=0 "${SHA}" > diff.txt || true
+
           python - <<'PY'
 import os, json, requests, textwrap
 
 repo   = os.environ["REPO"]
 sha    = os.environ["SHA"]
-title  = (os.environ.get("TITLE") or "").strip()
-body   = (os.environ.get("BODY") or "").strip()
-actor  = (os.environ.get("ACTOR") or "").strip()
-channel_id = os.environ["DISCORD_CHANNEL_ID"]
-bot_token  = os.environ["DISCORD_BOT_TOKEN"]
-openai_key = os.environ.get("OPENAI_API_KEY")
+actor  = os.environ["ACTOR"]
+msg    = (os.environ.get("COMMIT_MSG") or "").strip()
+channel= os.environ["DISCORD_CHANNEL_ID"]
+token  = os.environ["DISCORD_BOT_TOKEN"]
+openai = os.environ.get("OPENAI_API_KEY")
 
-def read(path):
-    try:
-        with open(path,"r",encoding="utf-8",errors="ignore") as f:
-            return f.read()
-    except FileNotFoundError:
-        return ""
+# Read short diff (trim to keep costs down)
+try:
+    diff = open("diff.txt","r",encoding="utf-8",errors="ignore").read()[:4000]
+except:
+    diff = ""
 
-changed = [ln.strip() for ln in read("changed_files.txt").splitlines() if ln.strip()]
-files_preview = ", ".join(changed[:6]) + (" …" if len(changed) > 6 else "") if changed else "(no files listed)"
-diff_trimmed = read("diff.txt")[:6000]
+def fallback_expl():
+    lines = [f"• Summary: {msg or '(no commit message)'}"]
+    if diff:
+        # show only file paths from the diff header
+        files = []
+        for line in diff.splitlines():
+            if line.startswith('+++ b/'):
+                files.append(line[6:])
+        if files:
+            preview = ", ".join(files[:6]) + (" …" if len(files)>6 else "")
+            lines.append(f"• Files: {preview}")
+    lines.append("• Next: run checks/tests if affected areas changed.")
+    return "\n".join(lines)
 
-def fallback():
-    out = [f"• Summary: {title or '(no title)'}"]
-    if body:
-        out.append("• Notes: " + body.splitlines()[0])
-    out.append(f"• Files: {files_preview}")
-    out.append("• Follow-ups: run tests/checks for affected areas.")
-    return "\n".join(out)
-
-def explain(prompt: str) -> str:
+def ai_explain(prompt: str) -> str:
     url = "https://api.openai.com/v1/responses"
-    headers = {"Authorization": f
+    headers = {"Authorization": f"Bearer {openai}", "Content-Type": "application/json"}
+    data = {"model": "gpt-4o-mini", "input": prompt}
+    r = requests.post(url, headers=headers, json=data, timeout=60)
+    r.raise_for_status()
+    j = r.json()
+    out = j.get("output_text")
+    if not out and isinstance(j.get("output"), list):
+        out = "\n".join([p.get("text","") for p in j["output"] if isinstance(p, dict) and p.get("type")=="output_text"]).strip()
+    return out or "(no explanation generated)"
+
+prompt = f"""Explain this commit for a TBM team in 5–8 short lines:
+- What changed (high level)
+- Why it likely changed (intent)
+- Any risks or checks
+Commit message: {msg or '(none)'}
+Diff (trimmed): {diff or '(no diff)'}
+"""
+
+explanation = fallback_expl()
+if openai:
+    try:
+        explanation = ai_explain(prompt)
+    except Exception as e:
+        explanation = f"(AI explanation failed: {e})\n\n" + fallback_expl()
+
+commit_url = f"https://github.com/{repo}/commit/{sha}"
+content = textwrap.dedent(f"""
+**[Commit]** `{repo}` @ `{sha[:7]}` by {actor}
+{commit_url}
+
+**[Explanation]**
+@everyone
+{explanation}
+""").strip()
+
+payload = {"content": content, "allowed_mentions": {"parse": ["everyone"]}}
+resp = requests.post(
+    f"https://discord.com/api/v10/channels/{channel}/messages",
+    headers={"Authorization": f"Bot {token}", "Content-Type": "application/json"},
+    data=json.dumps(payload),
+    timeout=30
+)
+resp.raise_for_status()
+print("Posted.")
+PY
