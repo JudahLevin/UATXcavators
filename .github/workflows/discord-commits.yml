@@ -1,50 +1,98 @@
-name: Discord Commit Notifier
+# scripts/explain_commit.py
+import os, json, time, subprocess, textwrap, requests
 
-on:
-  push:
-    branches: [ main ]  # change if your default branch is different
+WEBHOOK = os.environ.get("DISCORD_WEBHOOK_URL")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+REPO = os.environ.get("GITHUB_REPOSITORY", "")
+SHA = os.environ.get("GITHUB_SHA", "")
+ACTOR = os.environ.get("GITHUB_ACTOR", "")
+COMMIT_MSG = os.environ.get("COMMIT_MSG", "")
 
-jobs:
-  post-to-discord:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+def run(cmd: list[str]) -> str:
+    out = subprocess.check_output(cmd, text=True).strip()
+    return out
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+def list_changed_files(sha: str, limit: int = 12) -> list[str]:
+    try:
+        files = run(["git", "show", "--name-only", "--pretty=", sha]).splitlines()
+        files = [f for f in files if f.strip()]
+        return files[:limit]
+    except Exception:
+        return []
 
-      - name: Send commit to Discord
-        env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          REPO: ${{ github.repository }}
-          SHA: ${{ github.sha }}
-          ACTOR: ${{ github.actor }}
-          MSG: ${{ github.event.head_commit.message }}
-        shell: bash
-        run: |
-          set -e
-          COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
-          FILES=$(git show --name-only --pretty="" "$SHA" | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -)
-          [ -z "$FILES" ] && FILES="(no file list)"
-          SAFE_MSG=$(printf "%s" "$MSG" | sed 's/"/\\"/g')
+def post_to_discord(text: str):
+    if not WEBHOOK:
+        print("No DISCORD_WEBHOOK_URL set; skipping Discord post.")
+        return
+    payload = {"content": text[:1900]}  # keep well under 2000 char limit
+    r = requests.post(WEBHOOK, headers={"Content-Type": "application/json"}, data=json.dumps(payload), timeout=30)
+    r.raise_for_status()
 
-          printf '%s' "{
-            \"content\": \"**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}\n${COMMIT_URL}\n\n**Message:** ${SAFE_MSG}\n**Files:** ${FILES}\"
-          }" > payload.json
+def explain_with_openai(message: str, files: list[str], retries: int = 5) -> str:
+    if not OPENAI_API_KEY:
+        return "(AI explanation skipped: OPENAI_API_KEY is not set in the environment.)"
+    url = "https://api.openai.com/v1/responses"
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    prompt = textwrap.dedent(f"""
+        Explain this git commit to non-technical teammates in 2–4 short bullets.
+        Be plain-English, note risks/tests to run, and mention any config/CI changes.
 
-          curl -sS -X POST -H "Content-Type: application/json" \
-            -d @payload.json "$WEBHOOK"
+        Commit message:
+        {message or "(none)"}
 
-      - name: Explain commit in plain English
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # optional; script falls back if missing
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-          python scripts/explain_commit.py
+        Files changed (truncated list):
+        {", ".join(files) if files else "(none)"}
+    """).strip()
+
+    body = {
+        "model": "gpt-4o-mini",
+        "input": prompt,
+        "max_output_tokens": 220,
+    }
+
+    backoff = 1
+    for _ in range(retries):
+        resp = requests.post(url, headers=headers, json=body, timeout=45)
+        if resp.status_code == 200:
+            data = resp.json()
+            text = data.get("output_text")
+            if not text and isinstance(data.get("output"), list):
+                # very defensive fallback
+                text = "".join(part.get("content", "") for part in data["output"])
+            return text.strip() if text else "(AI explanation: empty response.)"
+        if resp.status_code == 429:
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 16)
+            continue
+        # other error: show short message
+        try:
+            err = resp.json()
+            msg = err.get("error", {}).get("message") or str(err)
+        except Exception:
+            msg = resp.text
+        return f"(AI explanation failed: {msg})"
+    return "(AI explanation skipped: repeated 429 rate limits.)"
+
+def main():
+    files = list_changed_files(SHA)
+    explanation = explain_with_openai(COMMIT_MSG, files)
+
+    commit_url = f"https://github.com/{REPO}/commit/{SHA}" if REPO and SHA else ""
+    summary = textwrap.dedent(f"""\
+        **[Commit Explanation]**
+        Repo: `{REPO}` • By: `{ACTOR}` • SHA: `{SHA[:7] if SHA else ''}`
+        {commit_url}
+
+        {explanation}
+
+        • **Summary:** {COMMIT_MSG or "(none)"}
+        • **Files:** {", ".join(files) if files else "(none)"}
+        • **Next:** run checks/tests for impacted areas.
+    """)
+    post_to_discord(summary)
+
+if __name__ == "__main__":
+    main()
