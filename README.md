@@ -31,5 +31,3 @@ To contribute:
 ## 📄 License
 
 MIT
-
-Test commit for Discord webhook.
