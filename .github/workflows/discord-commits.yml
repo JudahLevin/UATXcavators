@@ -11,7 +11,8 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Send commit to Discord
         env:
@@ -34,3 +35,16 @@ jobs:
 
           curl -sS -X POST -H "Content-Type: application/json" \
             -d @payload.json "$WEBHOOK"
+
+      - name: Explain commit in plain English
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # optional; script falls back if missing
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+          python scripts/explain_commit.py
