@@ -1,0 +1,36 @@
+name: Discord Commit Notifier
+
+on:
+  push:
+    branches: [ main ]  # change if your default branch is different
+
+jobs:
+  post-to-discord:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Send commit to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+          MSG: ${{ github.event.head_commit.message }}
+        shell: bash
+        run: |
+          set -e
+          COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
+          FILES=$(git show --name-only --pretty="" "$SHA" | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -)
+          [ -z "$FILES" ] && FILES="(no file list)"
+          SAFE_MSG=$(printf "%s" "$MSG" | sed 's/"/\\"/g')
+
+          printf '%s' "{
+            \"content\": \"**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}\n${COMMIT_URL}\n\n**Message:** ${SAFE_MSG}\n**Files:** ${FILES}\"
+          }" > payload.json
+
+          curl -sS -X POST -H "Content-Type: application/json" \
+            -d @payload.json "$WEBHOOK"
