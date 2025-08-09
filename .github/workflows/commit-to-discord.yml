@@ -1,0 +1,28 @@
+name: Send commits to Discord
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Send commit messages to Discord
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: https://discord.com/api/v10/channels/${{ secrets.DISCORD_CHANNEL_ID }}/messages
+          method: POST
+          customHeaders: |
+            {
+              "Authorization": "Bot ${{ secrets.DISCORD_BOT_TOKEN }}",
+              "Content-Type": "application/json"
+            }
+          data: |
+            {
+              "content": "📢 **New Commit** by ${{ github.actor }}:\n${{ github.event.head_commit.message }}"
+            }
