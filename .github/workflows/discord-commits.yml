@@ -2,14 +2,19 @@ name: Commits → Discord (classic format)
 
 on:
   push:
-    branches: [ main ]   # change if your default branch is different
+    branches: [ main ]
 
 jobs:
   post-commits:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (full history so we can read each commit)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Send each commit to Discord (message, files, link)
         env:
@@ -20,35 +25,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "${WEBHOOK:-}" ]; then
-            echo "Missing DISCORD_WEBHOOK_URL secret"; exit 1
-          fi
+          [ -z "${WEBHOOK:-}" ] && { echo "Missing DISCORD_WEBHOOK_URL secret"; exit 1; }
 
-          # If GitHub sent no commits (edge case), just exit
-          COUNT=$(echo "$COMMITS_JSON" | jq 'length')
-          if [ "$COUNT" -eq 0 ]; then
-            echo "No commits in this push."
-            exit 0
-          fi
+          COUNT=$(printf '%s' "$COMMITS_JSON" | jq 'length')
+          [ "$COUNT" -eq 0 ] && { echo "No commits in this push."; exit 0; }
 
-          # Loop through each commit in the push and post separately
-          echo "$COMMITS_JSON" | jq -r '.[].id' | while read -r SHA; do
-            # commit message for this SHA
-            MSG=$(echo "$COMMITS_JSON" | jq -r --arg sha "$SHA" '.[] | select(.id==$sha) | .message')
-            SAFE_MSG=$(printf "%s" "$MSG" | tr -d '\r' | sed 's/"/\\"/g' | head -c 900)
+          printf '%s' "$COMMITS_JSON" | jq -r '.[].id' | while read -r SHA; do
+            MSG=$(printf '%s' "$COMMITS_JSON" | jq -r --arg sha "$SHA" '.[] | select(.id==$sha) | .message')
+            SAFE_MSG=$(printf '%s' "$MSG" | tr -d '\r' | sed 's/"/\\"/g' | head -c 900)
 
-            # short file list for this specific commit
-            FILES=$(git show --name-only --pretty="" "$SHA" | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -)
-            [ -z "$FILES" ] && FILES="(no file list)"
+            # Try to list files for this specific commit; fall back if not available
+            if FILES=$(git show --name-only --pretty="" "$SHA" 2>/dev/null | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -); then
+              [ -z "$FILES" ] && FILES="(no file list)"
+            else
+              FILES="(file list unavailable)"
+            fi
 
             COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
+
             BODY="**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}
 ${COMMIT_URL}
 
 **Message:** ${SAFE_MSG}
 **Files:** ${FILES}"
 
-            # keep under Discord's 2000-char limit
             BODY=$(printf '%s' "$BODY" | head -c 1900)
 
             jq -nc --arg content "$BODY" '{content:$content}' > payload.json
