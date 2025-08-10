@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Rust toolchain (for Lumen)
+      - name: Setup Rust (for Lumen)
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Lumen
@@ -24,24 +24,45 @@ jobs:
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
           ACTOR: ${{ github.actor }}
+          MSG: ${{ github.event.head_commit.message }}
+          # Explicit default provider (Lumen works without any API key)
+          LUMEN_AI_PROVIDER: phind
         shell: bash
         run: |
           set -e
 
-          # 1) Generate a plain-English summary of the latest commit
-          SUMMARY="$(lumen explain HEAD || echo 'Lumen failed to summarize this commit.')"
+          if [ -z "$WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK_URL secret is missing"; exit 1
+          fi
 
-          # 2) Build a neat Discord message (stay under 2000 chars)
           COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
+          SAFE_MSG=$(printf "%s" "$MSG" | sed 's/"/\\"/g')
+
+          # Short file list (first 6)
+          FILES=$(git show --name-only --pretty="" "$SHA" | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -)
+          [ -z "$FILES" ] && FILES="(no file list)"
+
+          # Try Lumen first; don't fail the job if it errors
+          SUMMARY="$(lumen explain "$SHA" 2> lumen_err.log || true)"
+
+          if [ -z "$SUMMARY" ]; then
+            ERR="$(tr -d '\r' < lumen_err.log | head -c 300)"
+            # Fallback: provide diffstat + file changes so the post stays useful
+            DIFFSTAT="$(git diff --shortstat "${SHA}^" "$SHA" || true)"
+            CHANGES="$(git show --name-status --pretty="" "$SHA" | head -n 20 || true)"
+            SUMMARY="Lumen failed to summarize. ${ERR:-"(no error text)"} 
+
+Fallback summary:
+- ${DIFFSTAT:-No diffstat}
+- Files changed:
+${CHANGES:-None}"
+          fi
+
           SAFE_SUMMARY="$(printf '%s' "$SUMMARY" | head -c 1800)"
 
-          jq -nc \
-            --arg repo "$REPO" \
-            --arg sha  "${SHA:0:7}" \
-            --arg actor "$ACTOR" \
-            --arg url "$COMMIT_URL" \
-            --arg body "$SAFE_SUMMARY" \
-            '{content: ("**[Commit Summary]** `\($repo)` @ `\($sha)` by " + $actor + "\n" + $url + "\n\n" + $body)}' \
-            > payload.json
+          # Build and send the Discord message (stay under 2000 chars)
+          printf '%s' "{
+            \"content\": \"**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}\n${COMMIT_URL}\n\n**Message:** ${SAFE_MSG}\n**Files:** ${FILES}\n\n**[Summary]**\n${SAFE_SUMMARY}\"
+          }" > payload.json
 
           curl -sS -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
