@@ -1,0 +1,33 @@
+name: Discord Daily Recap
+
+on:
+  schedule:
+    - cron: "0 23 * * *"   # runs daily at 23:00 UTC; adjust to your local time
+  workflow_dispatch:       # allow manual run
+
+concurrency:
+  group: ${{ github.ref }}-daily-recap
+  cancel-in-progress: true
+
+jobs:
+  recap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Post daily summary
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # optional
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/daily_summary.py
