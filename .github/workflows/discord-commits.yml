@@ -1,56 +1,35 @@
-name: Commits → Discord (classic format)
+name: Discord Commit Notifier
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]   # change if needed
+
+concurrency:
+  group: ${{ github.ref }}-live-commits
+  cancel-in-progress: true
 
 jobs:
-  post-commits:
+  post-to-discord:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - name: Checkout (full history so we can read each commit)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Send each commit to Discord (message, files, link)
+      - name: Send commit to Discord
         env:
           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
           ACTOR: ${{ github.actor }}
-          COMMITS_JSON: ${{ toJson(github.event.commits) }}
+          MSG: ${{ github.event.head_commit.message }}
         shell: bash
         run: |
-          set -euo pipefail
-          [ -z "${WEBHOOK:-}" ] && { echo "Missing DISCORD_WEBHOOK_URL secret"; exit 1; }
-
-          COUNT=$(printf '%s' "$COMMITS_JSON" | jq 'length')
-          [ "$COUNT" -eq 0 ] && { echo "No commits in this push."; exit 0; }
-
-          printf '%s' "$COMMITS_JSON" | jq -r '.[].id' | while read -r SHA; do
-            MSG=$(printf '%s' "$COMMITS_JSON" | jq -r --arg sha "$SHA" '.[] | select(.id==$sha) | .message')
-            SAFE_MSG=$(printf '%s' "$MSG" | tr -d '\r' | sed 's/"/\\"/g' | head -c 900)
-
-            # Try to list files for this specific commit; fall back if not available
-            if FILES=$(git show --name-only --pretty="" "$SHA" 2>/dev/null | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -); then
-              [ -z "$FILES" ] && FILES="(no file list)"
-            else
-              FILES="(file list unavailable)"
-            fi
-
-            COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
-
-            BODY="**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}
-${COMMIT_URL}
-
-**Message:** ${SAFE_MSG}
-**Files:** ${FILES}"
-
-            BODY=$(printf '%s' "$BODY" | head -c 1900)
-
-            jq -nc --arg content "$BODY" '{content:$content}' > payload.json
-            curl -sS -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
-          done
+          COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
+          FILES=$(git show --name-only --pretty="" "$SHA" | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -)
+          [ -z "$FILES" ] && FILES="(no file list)"
+          SAFE_MSG=$(printf "%s" "$MSG" | sed 's/"/\\"/g')
+          printf '%s' "{
+            \"content\": \"**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}\n${COMMIT_URL}\n\n**Message:** ${SAFE_MSG}\n**Files:** ${FILES}\"
+          }" > payload.json
+          curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
