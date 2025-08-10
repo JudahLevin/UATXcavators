@@ -1,0 +1,47 @@
+name: Commit Summary → Discord
+
+on:
+  push:
+    branches: [ main ]   # change if your default branch is different
+
+jobs:
+  summarize-and-post:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain (for Lumen)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Lumen
+        run: cargo install lumen
+
+      - name: Summarize latest commit and post to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+        shell: bash
+        run: |
+          set -e
+
+          # 1) Generate a plain-English summary of the latest commit
+          SUMMARY="$(lumen explain HEAD || echo 'Lumen failed to summarize this commit.')"
+
+          # 2) Build a neat Discord message (stay under 2000 chars)
+          COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
+          SAFE_SUMMARY="$(printf '%s' "$SUMMARY" | head -c 1800)"
+
+          jq -nc \
+            --arg repo "$REPO" \
+            --arg sha  "${SHA:0:7}" \
+            --arg actor "$ACTOR" \
+            --arg url "$COMMIT_URL" \
+            --arg body "$SAFE_SUMMARY" \
+            '{content: ("**[Commit Summary]** `\($repo)` @ `\($sha)` by " + $actor + "\n" + $url + "\n\n" + $body)}' \
+            > payload.json
+
+          curl -sS -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
