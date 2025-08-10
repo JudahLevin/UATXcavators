@@ -1,4 +1,4 @@
-name: Commits → Discord
+name: Commits → Discord (classic format)
 
 on:
   push:
@@ -11,15 +11,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Post every commit in this push as a line-item in one Discord message
-      - name: Send commit(s) to Discord
+      - name: Send each commit to Discord (message, files, link)
         env:
           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO: ${{ github.repository }}
-          COMMITS_JSON: ${{ toJson(github.event.commits) }}
-          PARENT_SHA: ${{ github.event.before }}
-          HEAD_SHA: ${{ github.sha }}
           ACTOR: ${{ github.actor }}
+          COMMITS_JSON: ${{ toJson(github.event.commits) }}
         shell: bash
         run: |
           set -euo pipefail
@@ -27,20 +24,33 @@ jobs:
             echo "Missing DISCORD_WEBHOOK_URL secret"; exit 1
           fi
 
-          # Build a compact list of commits in this push
-          BODY="**[Push]** \`${REPO}\` by ${ACTOR}\nCompare: https://github.com/${REPO}/compare/${PARENT_SHA}...${HEAD_SHA}\n"
-          echo "$COMMITS_JSON" | jq -r '.[] | "\(.id[0:7]) · \(.author.username // .author.name) · \(.message | gsub("\n"; " ")) · https://github.com/'"$REPO"'/commit/\(.id)"' | \
-          while IFS= read -r line; do
-            BODY="$BODY\n$line"
+          # If GitHub sent no commits (edge case), just exit
+          COUNT=$(echo "$COMMITS_JSON" | jq 'length')
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No commits in this push."
+            exit 0
+          fi
+
+          # Loop through each commit in the push and post separately
+          echo "$COMMITS_JSON" | jq -r '.[].id' | while read -r SHA; do
+            # commit message for this SHA
+            MSG=$(echo "$COMMITS_JSON" | jq -r --arg sha "$SHA" '.[] | select(.id==$sha) | .message')
+            SAFE_MSG=$(printf "%s" "$MSG" | tr -d '\r' | sed 's/"/\\"/g' | head -c 900)
+
+            # short file list for this specific commit
+            FILES=$(git show --name-only --pretty="" "$SHA" | sed 's/"/\\"/g' | head -n 6 | paste -sd ', ' -)
+            [ -z "$FILES" ] && FILES="(no file list)"
+
+            COMMIT_URL="https://github.com/${REPO}/commit/${SHA}"
+            BODY="**[Commit]** \`${REPO}\` @ \`${SHA:0:7}\` by ${ACTOR}
+${COMMIT_URL}
+
+**Message:** ${SAFE_MSG}
+**Files:** ${FILES}"
+
+            # keep under Discord's 2000-char limit
+            BODY=$(printf '%s' "$BODY" | head -c 1900)
+
+            jq -nc --arg content "$BODY" '{content:$content}' > payload.json
+            curl -sS -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
           done
-
-          # Also include a short file list for the head commit (handy context)
-          FILES=$(git show --name-only --pretty="" "$HEAD_SHA" | head -n 8 | paste -sd ', ' -)
-          [ -z "$FILES" ] && FILES="(no file list)"
-          BODY="$BODY\n\n**Files (latest commit):** $FILES"
-
-          # Keep under Discord 2000 chars
-          BODY=$(printf '%s' "$BODY" | head -c 1900)
-
-          jq -nc --arg content "$BODY" '{content:$content}' > payload.json
-          curl -sS -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
