@@ -1,12 +1,12 @@
 [
   {
     "name": "University of Austin (UATX)",
-    "organization": "University",
-    "contact": "Anchor institution"
+    "category": "University",
+    "contact": "In-Person"
   },
   {
-    "name": "UATXcavators TBM Club",
-    "organization": "Club",
-    "contact": "Home organization"
+    "name": "AECOM",
+    "organization": "Tunneling Industry",
+    "contact": "LinkedIn"
   }
 ]
