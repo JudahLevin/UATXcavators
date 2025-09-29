@@ -1,0 +1,117 @@
+{
+  "Cutter Head & Drive": [
+    {
+      "Label": "Cutter Head Motor",
+      "Explanation": "Turns drive assembly, VFD controlled",
+      "Model": "SEW RF127R77DRN100LM4",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "Screw Jack",
+      "Explanation": "Linear actuator for cutter head positioning",
+      "Model": "DIY String Pot Jack",
+      "Quantity": 1,
+      "State": "OFF"
+    }
+  ],
+  "Cooling": [
+    {
+      "Label": "Primary Intake Fan",
+      "Explanation": "Draws air to cool motor",
+      "Model": "Delta AFB1224EHE-EP",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "Secondary Intake Fan",
+      "Explanation": "Guides airflow over motor fins",
+      "Model": "Delta AFB1224EHE-EP",
+      "Quantity": 1,
+      "State": "OFF"
+    }
+  ],
+  "Mucking": [
+    {
+      "Label": "Conveyor Motor",
+      "Explanation": "Turns auger to lift muck from reservoir",
+      "Model": "Leeson 108710.00",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "Conditioner Pump",
+      "Explanation": "Transfers conditioning fluid to cutter head",
+      "Model": "Pentair Shurflow #5059-1310-D011",
+      "Quantity": 1,
+      "State": "OFF"
+    }
+  ],
+  "Electronics & I/O": [
+    {
+      "Label": "PLC",
+      "Explanation": "Controls logic to devices",
+      "Model": "Automation Direct C2-03CPU",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "Safety PLC",
+      "Explanation": "Wired to e-stop shut downs",
+      "Model": "Automation Direct SCR31-280002",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "Stacklight",
+      "Explanation": "Notifies team for safe to approach, alerts",
+      "Model": "TL70P3APKQ",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "E-Stop",
+      "Explanation": "Cuts power to distribution and motors",
+      "Model": "Schneider XALK178W3B140G",
+      "Quantity": 2,
+      "State": "OFF"
+    }
+  ],
+  "Sensors": [
+    {
+      "Label": "Proximity Sensor",
+      "Explanation": "Detects muck level",
+      "Model": "BCF5-S18-AP4X",
+      "Quantity": 1,
+      "State": "OFF"
+    },
+    {
+      "Label": "Contact Temp + Vibration Sensor",
+      "Explanation": "Monitors motors, emitters, muck reservoir",
+      "Model": "CMVT-QR20-IOLX3-H1141",
+      "Quantity": 3,
+      "State": "OFF"
+    },
+    {
+      "Label": "Ambient Temp Sensor",
+      "Explanation": "Monitors enclosure, panel, TBM ambient temp",
+      "Model": "CMTH-M12-IOL6X2-H1141",
+      "Quantity": 3,
+      "State": "OFF"
+    },
+    {
+      "Label": "Pressure Sensor",
+      "Explanation": "Monitors nozzle and pump pressure",
+      "Model": "PT16A-1003-IOL-H1141",
+      "Quantity": 2,
+      "State": "OFF"
+    },
+    {
+      "Label": "IMU",
+      "Explanation": "Tracks orientation (rear, side, front)",
+      "Model": "MPU6050",
+      "Quantity": 3,
+      "State": "OFF"
+    }
+  ]
+}
