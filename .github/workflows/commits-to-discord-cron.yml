@@ -3,13 +3,13 @@ name: Post last X hours of commits to Discord (cron)
 
 on:
   schedule:
-    - cron: "*/1 * * * *"   # or */5 for 5-minute ticks; times are UTC
+    - cron: "*/5 * * * *"   # every 5 minutes (UTC); fastest reliable cadence
   workflow_dispatch:
     inputs:
       hours_back:
         description: "Look back this many hours"
         required: false
-        default: "1"
+        default: "0.25"      # ~15 minutes when run manually
       branch:
         description: "Branch to scan"
         required: false
@@ -32,6 +32,8 @@ jobs:
       - run: pip install requests openai
       - name: Post digest to Discord
         run: |
-          HOURS_BACK=${{ github.event.inputs.hours_back || '6' }}
+          # On schedule, github.event.inputs.* are empty, so these defaults apply:
+          HOURS_BACK=${{ github.event.inputs.hours_back || '0.25' }}  # ~15 min by default
           BRANCH=${{ github.event.inputs.branch || 'main' }}
+          echo "Running at $(date -u) UTC; hours=$HOURS_BACK; branch=$BRANCH"
           python .github/scripts/poll_commits.py --hours "$HOURS_BACK" --branch "$BRANCH"
