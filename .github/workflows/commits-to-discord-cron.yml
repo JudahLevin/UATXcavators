@@ -8,7 +8,7 @@ on:
       hours_back:
         description: "Look back this many hours"
         required: false
-        default: "6"
+        default: "1"
       branch:
         description: "Branch to scan"
         required: false
