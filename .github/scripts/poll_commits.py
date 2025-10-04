@@ -132,16 +132,19 @@ header = f"**{REPO}** — branch **{args.branch}**\nCommits in last {args.hours:
 # 3) Summarize with OpenAI (optional)
 summary = summarize_with_openai(REPO, args.branch, args.hours, bullets)
 
-# 4) Post to Discord: summary first, then bullets
+# 4) Post to Discord: SUMMARY ONLY
+if not bullets:
+    # No commits in this window — post nothing (or post a minimal note)
+    # post_to_discord(f"{header}\n\n*(no commits in this window)*")
+    sys.exit(0)
+
 if summary:
+    # Post just the AI summary (you can keep or remove the header line)
     post_to_discord(f"{header}\n\n**AI Summary:**\n{summary}")
 else:
-    post_to_discord(f"{header}\n\n*(AI summary unavailable; posting raw list)*")
+    # If the AI call failed or OPENAI_API_KEY missing, either post nothing...
+    # sys.exit(0)
+    # ...or post a short fallback message:
+    post_to_discord(f"{header}\n\n*(AI summary unavailable this run)*")
 
-if bullets:
-    body = "\n\n".join(bullets)
-    post_to_discord(body)
-else:
-    post_to_discord("*(no commits in this window)*")
-
-print("Posted summary and commits to Discord.")
+print("Posted summary to Discord.")
