@@ -13,10 +13,11 @@
 
 
 3. Save Script Properties
-4. Copy/paste the following code into Editor
+4. Copy/paste the following code into Editor and hit save
 5. Select createInstallableEditTrigger in the function dropdown menu and hit run
-6. Give permissions
-7. All changes in *just that spreadsheet* will be posted to the file location specified.
+6. Review permissions ➡️ [your account] ➡️ Advanced ➡️ Go to [project name] (unsafe) ➡️ select all permissions and hit continue
+7. All changes in *just that spreadsheet* will be posted to the file location specified in JSON format
+8. Confirm with bottom-right corner pop-up in sheet: ✅ Logged edit: [col][row]
 
 ```
 /*** UI helpers you already tested ***/
