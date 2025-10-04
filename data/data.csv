@@ -1,5 +1,5 @@
 Label,Explanation,Model,Quantity,Voltage,Current,IO Type,Owner,Terminal/Module_Type
-Sensors,,,,,,,,
+Sensors TEST TSET,,,,,,,,
 Proximity,Muck level (1),BCF5-S18-AP4X,1,24 VDC,150 mA,Discrete PNP (NO typical),PLC,"24 V DI (PNP) module, M12 4-pin cordset"
 Contact temp + vibration,Motor (1) + ultrasound emitters (1) + muck reservoir (1),CMVT-QR20-IOLX3-H1141,3,24 VDC,150 mA,IO-Link device,PLC via IO-Link master,IO-Link master port (Class A)
 Ambient temp,"Control panel (1), enclosure (1), tbm ambient (1)",CMTH-M12-IOL6X2-H1141,3,24 VDC,450 mA,IO-Link device,PLC via IO-Link master,IO-Link master port (Class A)
