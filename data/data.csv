@@ -1,0 +1,31 @@
+Label,Explanation,Model,Quantity,Voltage,Current,IO Type,Owner,Terminal/Module_Type
+Sensors,,,,,,,,
+Proximity,Muck level (1),BCF5-S18-AP4X,1,24 VDC,150 mA,Discrete PNP (NO typical),PLC,"24 V DI (PNP) module, M12 4-pin cordset"
+Contact temp + vibration,Motor (1) + ultrasound emitters (1) + muck reservoir (1),CMVT-QR20-IOLX3-H1141,3,24 VDC,150 mA,IO-Link device,PLC via IO-Link master,IO-Link master port (Class A)
+Ambient temp,"Control panel (1), enclosure (1), tbm ambient (1)",CMTH-M12-IOL6X2-H1141,3,24 VDC,450 mA,IO-Link device,PLC via IO-Link master,IO-Link master port (Class A)
+Pressure,At nozzle (1) + pump (1),PT16A-1003-IOL-H1141,2,24 VDC,46 mA,IO-Link device,PLC via IO-Link master,IO-Link master port (Class A)
+Guard Interlock,enclosure (1),SI-LS42 Series,1,24 VDC,180 mA,Discrete PNP/NPN output (often configurable),PLC via IO-Link master,"24 V DI (PNP) module, M12 cordset"
+IMU,Rear (1) + sides (2) + front (1),ICM-20948,4,3.3 VDC,5 mA,I²C (SDA/SCL @ 3.3 V),FPGA,ESP32 GPIO (I²C @ 400 kHz)
+Current,ultrasound emitters (2),ACS758,4,5 VDC,20 mA,Analog voltage (centered around mid-rail),ESP32,ESP32 ADC via RC anti-alias + divider/buffer
+VAC,ultrasound emitters (2),ZMPT101B,2,5 VDC,80 mA,Analog AC (needs mid-bias),ESP32,ESP32 ADC with bias to ~1.65 V + RC anti-alias
+VDC,auguer motor (1) + conditioner pump (1) + solenoid valve (3) + stacklight (1) + fans (4),INA260,10,5 VDC,.3 mA,,ESP32,
+,,,,,,,,
+Actuators,,,,,,,,
+Ultrasound emitters,de-clogs the muck before entering the auger,?,2,?,?,,,
+Screw Jack Motor,precise thrust/reaction torque control,"Jack: Joyce Dayton WJT62, Motor: ?",1,?,?,,,
+Solenoid Valve,"controls spray nozzles - 1 in center for low velo zone, 2 more all on muck reservoir side of bottom plate",B09W9W5LF8 (Amazon - Pissente),3,24 VDC,660 mA,,,
+Auger Motor,"turns auger to lift muck from reservoir, stock VFD-controlled",Leeson 108710.00,1,90 VDC,4 A,,,
+Cutter Head Motor,"turns drive assembly, stock VFD-controlled",SEW RF127R77DRN100LM4,1,230 VAC,10 A,,,
+Stacklight,"notifies team for safe to approach, red alert, etc.",TL70P3APKQ,1,24 VDC,420 mA,,,
+Conditioner Pump,transfers conditioning fluid to cutter head,Pentair Shurflow #5059-1310-D011,1,12 VDC,17 A,,,
+Fans,replaces air near the motor,AFB1224EHE-EP,4,24 VDC,3.4 A,,,
+,,,,,,,,
+Controls,,,,,,,,
+PLC,controls logic to devices,Automation Direct C2-03CPU,1,24 VDC,130 mA,,,
+Safety PLC,wired to e-stop shut downs,Automation Direct SCR31-280002,1,24 VDC,105 mA,,,
+HMI,displays operator GUI,Automation Direct EA9-T10CL,1,24 VDC,750 mA,,,
+IO‑Link Master/Edge,Alternative/companion to Turck masters; edge logic + Modbus TCP/EtherNet‑IP/PROFINET.,Banner DXMR110-8K,1,,,,,
+Panel Feed‑through (Ethernet),"Clean, sealed panel transition between M12 in the field and RJ45 inside the cabinet.",Turck FKSDD RJ45SF 44/ST,1,,,,,
+IO‑Link Cable (Class A),Standard IO‑Link device cable for Class‑A ports (power + C/Q over 3–4 wires).,Turck RKC4.4T‑5‑RSC4.4T/TXL,7,,,,,
+"Power cordset (M12 5-pin, single-ended)",Feeds 24 VDC into the DXMR110-8K ,Banner BC-M12F5-22-2-SF,1,,,,,
+E-Stop,cuts power to the power distribution box and the motor,Schneider XALK178W3B140G,2,,,,,
