@@ -1,0 +1,72 @@
+name: Instant AI Commit Summary
+
+on:
+  push:
+    branches: [ main ]  # Runs every time someone pushes to main
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install openai requests PyGithub
+
+      - name: Summarize latest commits and send to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python <<'PYCODE'
+          import os, requests
+          from github import Github
+          from openai import OpenAI
+
+          client = OpenAI(api_key=os.getenv("GEMINI_API_KEY"))
+          g = Github(os.getenv("GITHUB_TOKEN"))
+          repo = g.get_repo(os.getenv("GITHUB_REPOSITORY"))
+
+          # Get recent push event from GITHUB_SHA
+          commit_sha = os.getenv("GITHUB_SHA")
+          commit = repo.get_commit(commit_sha)
+
+          msg = commit.commit.message
+          author = commit.commit.author.name
+          sha = commit.sha[:7]
+          files = [f.filename for f in commit.files]
+          file_list = "\n".join(files[:10])
+
+          prompt = f"""
+          You are summarizing a Git commit for a Discord dev team.
+          Write 1-2 clear sentences explaining what this commit changes or improves.
+          Mention the purpose or module affected, if it’s obvious.
+
+          Commit message:
+          {msg}
+
+          Files changed:
+          {file_list}
+          """
+
+          try:
+              response = client.chat.completions.create(
+                  model="gemini-1.5-flash",
+                  messages=[{"role": "user", "content": prompt}]
+              )
+              summary = response.choices[0].message.content.strip()
+          except Exception as e:
+              summary = f"(Error generating summary: {e})"
+
+          discord_msg = f"🧩 **Commit `{sha}` by {author}**\n{summary}"
+          requests.post(os.getenv("DISCORD_WEBHOOK_URL"), json={"content": discord_msg})
+          PYCODE
+
