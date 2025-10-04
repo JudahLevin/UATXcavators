@@ -1,0 +1,48 @@
+name: AI Commit Summary to Discord
+
+on:
+  push:  # triggers on every commit
+    branches:
+      - main
+      - master
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Summarize and send to Discord
+        run: |
+          pip install openai requests
+          python - <<'EOF'
+          import os, subprocess, requests, openai
+
+          openai.api_key = os.environ["OPENAI_API_KEY"]
+          webhook = os.environ["DISCORD_WEBHOOK"]
+
+          # Get latest commit info
+          commit_msg = subprocess.getoutput("git log -1 --pretty=format:'%s'")
+          author = subprocess.getoutput("git log -1 --pretty=format:'%an'")
+          diff = subprocess.getoutput("git show --stat -1")
+
+          # Ask AI to summarize the commit
+          prompt = f"Summarize this Git commit for a team Discord update:\n\nCommit: {commit_msg}\nAuthor: {author}\nDiff:\n{diff}"
+          response = openai.ChatCompletion.create(
+              model="gpt-4o-mini",
+              messages=[{"role": "user", "content": prompt}]
+          )
+          summary = response.choices[0].message.content.strip()
+
+          # Send nicely formatted message to Discord
+          payload = {
+              "content": f"🧠 **AI Commit Summary by {author}:**\n**Commit:** {commit_msg}\n{summary}"
+          }
+
+          requests.post(webhook, json=payload)
+          print("✅ Sent AI summary to Discord")
+          EOF
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
