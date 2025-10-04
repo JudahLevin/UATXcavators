@@ -1,0 +1,40 @@
+name: Post last X hours of commits to Discord (cron)
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"  # every 30 minutes
+  workflow_dispatch:
+    inputs:
+      hours_back:
+        description: "Look back this many hours"
+        required: false
+        default: "6"
+      branch:
+        description: "Branch to scan"
+        required: false
+        default: "main"
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read   # allow API read; default GITHUB_TOKEN works for this repo
+    env:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # provided by Actions automatically
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Post digest to Discord
+        run: |
+          HOURS_BACK=${{ github.event.inputs.hours_back || '6' }}
+          BRANCH=${{ github.event.inputs.branch || 'main' }}
+          python .github/scripts/poll_commits.py --hours "$HOURS_BACK" --branch "$BRANCH"
