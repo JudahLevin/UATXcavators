@@ -1,0 +1,16 @@
+name: Discord Commit Summary
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # Runs daily at midnight CST (05:00 UTC)
+  workflow_dispatch:  # Allow manual run from Actions tab
+
+jobs:
+  summarize:
+    uses: Miguel07Alm/dcs/.github/workflows/dcs-action.yml@main
+    with:
+      frequency: daily          # Options: daily, weekly, monthly
+      send_empty_summary: false # Don't post if no commits found
+    secrets:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
