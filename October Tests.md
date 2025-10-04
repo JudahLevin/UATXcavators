@@ -19,6 +19,8 @@ This fits into our broader goals of:
 | Monday, October 20 | Forces Test|
 | Monday, October 27 | Conditioning Test |
 
+> 🚨 As we source parts, always weigh the tradeoffs of sourcing in-house or off-the-shelf. 
+
 ### Cutter Head Test
 
 Let *p* be how much ground in mm the TBM eats per revolution of the cutter head, and *RPM* be the number of cutter head revolutions every minute. Then, 
@@ -85,5 +87,3 @@ In this case, they behave hand-in-hand:
 * TBD controls/electronics
 * TBD pump pressure sensor
 * TBD other sensors (e.g. vibration/temp) and valves (e.g. clean)
-
-  
