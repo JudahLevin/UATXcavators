@@ -1,8 +1,11 @@
-import os, sys, argparse, datetime as dt, requests, textwrap
+# .github/scripts/poll_commits.py
+import os, sys, argparse, datetime as dt, requests
+from typing import List, Dict
 
 DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK_URL")
 GITHUB_TOKEN = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN")
-REPO = os.environ.get("GITHUB_REPOSITORY")  # e.g. owner/name
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+REPO = os.environ.get("GITHUB_REPOSITORY")  # e.g., owner/name
 
 if not DISCORD_WEBHOOK:
     sys.exit("Missing DISCORD_WEBHOOK_URL secret.")
@@ -10,83 +13,135 @@ if not GITHUB_TOKEN:
     sys.exit("Missing GITHUB_TOKEN (or GH_PAT).")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--hours", type=float, default=6.0, help="Look back this many hours")
+parser.add_argument("--hours", type=float, default=6.0)
 parser.add_argument("--branch", type=str, default="main")
 args = parser.parse_args()
 
 now = dt.datetime.utcnow()
 since = now - dt.timedelta(hours=args.hours)
-# ISO format for GitHub API
 since_iso = since.replace(microsecond=0).isoformat() + "Z"
 until_iso = now.replace(microsecond=0).isoformat() + "Z"
 
-headers = {
+gh_headers = {
     "Accept": "application/vnd.github+json",
     "Authorization": f"Bearer {GITHUB_TOKEN}",
     "X-GitHub-Api-Version": "2022-11-28",
     "User-Agent": "commit-digest"
 }
 
-def fetch_commits(repo, branch, since_iso, until_iso, per_page=100, max_pages=5):
+def fetch_commits(repo: str, branch: str, since_iso: str, until_iso: str,
+                  per_page: int = 100, max_pages: int = 5) -> List[Dict]:
     all_items = []
     for page in range(1, max_pages+1):
-        params = {
-            "sha": branch,
-            "since": since_iso,
-            "until": until_iso,
-            "per_page": per_page,
-            "page": page
-        }
+        params = {"sha": branch, "since": since_iso, "until": until_iso,
+                  "per_page": per_page, "page": page}
         r = requests.get(f"https://api.github.com/repos/{repo}/commits",
-                         headers=headers, params=params, timeout=30)
+                         headers=gh_headers, params=params, timeout=30)
         r.raise_for_status()
         items = r.json()
-        if not items:
-            break
+        if not items: break
         all_items.extend(items)
-        if len(items) < per_page:
-            break
+        if len(items) < per_page: break
     return all_items
 
-def is_merge(commit):
-    # parents length > 1 is a merge commit
+def is_merge(commit: Dict) -> bool:
     return len(commit.get("parents", [])) > 1
 
-def format_commits(repo, branch, items):
+def bullet_lines(items: List[Dict]) -> List[str]:
     lines = []
     for c in items:
-        sha = c.get("sha", "")[:7]
-        commit = c.get("commit", {})
-        msg = (commit.get("message", "") or "").splitlines()[0][:200]
+        sha = c.get("sha","")[:7]
+        commit = c.get("commit", {}) or {}
+        msg = (commit.get("message","") or "").splitlines()[0][:200]
         author = (commit.get("author", {}) or {}).get("name", "unknown")
         ts = (commit.get("author", {}) or {}).get("date", "")
-        url = c.get("html_url", "")
-        lines.append(f"[`{sha}`] {msg} — {author} ({ts})\n{url}")
+        url = c.get("html_url","")
+        lines.append(f"• `{sha}` {msg} — {author} ({ts})\n{url}")
+    return lines
 
-    header = f"**{repo}** — branch **{branch}**\nCommits from last {args.hours:g}h: {len(lines)} found."
-    content = header + ("\n\n" + "\n\n".join(lines) if lines else "\n\n*(no commits in this window)*")
-    return content
+def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[str]) -> str:
+    """
+    Ask OpenAI for a 2–5 sentence human-friendly summary.
+    If OPENAI_API_KEY is missing or call fails, return an empty string.
+    """
+    if not OPENAI_API_KEY or not bullets:
+        return ""
 
-def post_to_discord(content):
-    # Chunk to under 2000 chars
+    # Keep prompt small to control tokens/cost; include only first N bullets
+    max_bullets = 25
+    subset = bullets[:max_bullets]
+    prompt = (
+        f"You are a release-notes assistant. Summarize recent GitHub commits for {repo} "
+        f"on branch '{branch}' from the last {hours:g} hours. "
+        f"Write 2–5 concise sentences for non-developers. "
+        f"Group by themes (features, fixes, refactors), avoid file paths/SHAs, and keep it neutral.\n\n"
+        f"Commits:\n" + "\n".join(subset)
+    )
+
+    # OpenAI Responses API (text generation).
+    # Models like gpt-4.1 or gpt-4.1-mini work well here.
+    # See official docs: Text generation & Responses API. 
+    # https://platform.openai.com/docs/guides/text ; https://platform.openai.com/docs/guides/migrate-to-responses
+    try:
+        import openai
+        openai.api_key = OPENAI_API_KEY
+        # Modern SDKs expose `responses.create`; older expose `chat.completions.create`.
+        # Use a generic fallback to support both.
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=OPENAI_API_KEY)
+            resp = client.responses.create(
+                model="gpt-4.1-mini",
+                input=prompt,
+                temperature=0.4,
+                max_output_tokens=250
+            )
+            text = resp.output_text
+        except Exception:
+            # Fallback to chat.completions if needed
+            resp = openai.ChatCompletion.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.4,
+                max_tokens=250,
+            )
+            text = resp["choices"][0]["message"]["content"]
+        return text.strip()
+    except Exception as e:
+        print(f"OpenAI error (non-fatal): {e}", file=sys.stderr)
+        return ""
+
+def post_to_discord(content: str):
     MAX = 1900
-    parts = [content[i:i+MAX] for i in range(0, len(content), MAX)] or [content]
-    for i, part in enumerate(parts, 1):
-        if len(parts) > 1:
-            part = f"{part}\n\n(part {i}/{len(parts)})"
+    chunks = [content[i:i+MAX] for i in range(0, len(content), MAX)] or [content]
+    for i, part in enumerate(chunks, 1):
+        if len(chunks) > 1:
+            part = f"{part}\n\n(part {i}/{len(chunks)})"
         r = requests.post(DISCORD_WEBHOOK, json={"content": part}, timeout=30)
         r.raise_for_status()
 
-# 1) Get commits
+# 1) Fetch and filter commits
 items = fetch_commits(REPO, args.branch, since_iso, until_iso)
-
-# 2) Optional: filter out merge commits for readability
 items = [c for c in items if not is_merge(c)]
-
-# 3) Sort oldest→newest (Discord reads better this way)
 items.sort(key=lambda c: (c.get("commit", {}).get("author", {}) or {}).get("date", ""))
 
-# 4) Build message & post
-content = format_commits(REPO, args.branch, items)
-post_to_discord(content)
-print("Posted to Discord.")
+# 2) Build bullets (raw list for Discord) and header
+bullets = bullet_lines(items)
+header = f"**{REPO}** — branch **{args.branch}**\nCommits in last {args.hours:g}h: {len(bullets)}"
+
+# 3) Summarize with OpenAI (optional)
+summary = summarize_with_openai(REPO, args.branch, args.hours, bullets)
+
+# 4) Post to Discord: summary first, then bullets
+if summary:
+    post_to_discord(f"{header}\n\n**AI Summary:**\n{summary}")
+else:
+    post_to_discord(f"{header}\n\n*(AI summary unavailable; posting raw list)*")
+
+if bullets:
+    body = "\n\n".join(bullets)
+    post_to_discord(body)
+else:
+    post_to_discord("*(no commits in this window)*")
+
+print("Posted summary and commits to Discord.")
