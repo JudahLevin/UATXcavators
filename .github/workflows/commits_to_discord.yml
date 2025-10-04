@@ -1,0 +1,138 @@
+name: Commits → Discord (last X hours)
+
+on:
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: "Look back this many hours"
+        required: true
+        default: "6"
+  schedule:
+    # run every hour; change if you like
+    - cron: "0 * * * *"
+
+permissions:
+  contents: read
+
+env:
+  # Fallback if schedule trigger runs (no inputs available)
+  DEFAULT_HOURS: "6"
+  # Optional: limit to a branch; leave blank to use default branch
+  BRANCH: ""
+  # Optional: only include commits touching a path (e.g., "src/")
+  PATH_FILTER: ""
+
+jobs:
+  post-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve lookback window
+        id: window
+        run: |
+          HOURS="${{ github.event.inputs.hours || env.DEFAULT_HOURS }}"
+          NOW_UTC="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          SINCE_UTC="$(date -u -d "-${HOURS} hours" +"%Y-%m-%dT%H:%M:%SZ")"
+          echo "hours=$HOURS" >> $GITHUB_OUTPUT
+          echo "now=$NOW_UTC" >> $GITHUB_OUTPUT
+          echo "since=$SINCE_UTC" >> $GITHUB_OUTPUT
+
+      - name: Get default branch (if not set)
+        id: branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const set = process.env.BRANCH && process.env.BRANCH.trim().length > 0;
+            if (set) {
+              core.setOutput('ref', process.env.BRANCH.trim());
+              return;
+            }
+            const repo = await github.repos.get(context.repo);
+            core.setOutput('ref', repo.data.default_branch);
+
+      - name: List commits in window
+        id: commits
+        uses: actions/github-script@v7
+        env:
+          SINCE: ${{ steps.window.outputs.since }}
+          UNTIL: ${{ steps.window.outputs.now }}
+          REF:   ${{ steps.branch.outputs.ref }}
+          PATH_FILTER: ${{ env.PATH_FILTER }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const since = process.env.SINCE;
+            const until = process.env.UNTIL;
+            const sha   = process.env.REF;
+            const path  = process.env.PATH_FILTER;
+
+            let page = 1, per_page = 100, all = [];
+            while (true) {
+              const { data } = await github.repos.listCommits({
+                owner, repo, sha, since, until, per_page, page, ...(path ? {path} : {})
+              });
+              all = all.concat(data);
+              if (data.length < per_page) break;
+              page++;
+            }
+
+            // Prepare concise lines
+            const lines = all.map(c => {
+              const title = c.commit.message.split('\n')[0];
+              const who = c.author?.login || c.commit.author?.name || "unknown";
+              const ts  = c.commit.author?.date || c.commit.committer?.date || "";
+              return `• \`${c.sha.slice(0,7)}\` — ${title} — ${who} — ${ts} <${c.html_url}>`;
+            });
+
+            core.setOutput('count', String(all.length));
+            core.setOutput('payload', JSON.stringify(lines));
+
+      - name: Post to Discord
+        if: ${{ steps.commits.outputs.count != '0' }}
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          HOURS: ${{ steps.window.outputs.hours }}
+          SINCE: ${{ steps.window.outputs.since }}
+          UNTIL: ${{ steps.window.outputs.now }}
+          BRANCH: ${{ steps.branch.outputs.ref }}
+          LINES: ${{ steps.commits.outputs.payload }}
+        with:
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK_URL;
+            if (!webhook) {
+              core.setFailed("Missing DISCORD_WEBHOOK_URL secret");
+              return;
+            }
+            const repoUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
+            const header = `**${context.repo.owner}/${context.repo.repo}** commits in the last **${process.env.HOURS}h** on \`${process.env.BRANCH}\`\n` +
+                           `\`${process.env.SINCE}\` → \`${process.env.UNTIL}\`\n${repoUrl}\n`;
+
+            // Discord 2000-char limit — chunk messages
+            const lines = JSON.parse(process.env.LINES);
+            const chunks = [];
+            let block = header;
+            for (const line of lines) {
+              if ((block + line + "\n").length > 1800) { // keep headroom
+                chunks.push(block);
+                block = "";
+              }
+              block += line + "\n";
+            }
+            if (block.trim().length) chunks.push(block);
+
+            for (const content of chunks) {
+              const res = await fetch(webhook, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content })
+              });
+              if (!res.ok) {
+                core.setFailed(`Discord webhook failed: ${res.status} ${await res.text()}`);
+                return;
+              }
+            }
+
+      - name: Nothing to report
+        if: ${{ steps.commits.outputs.count == '0' }}
+        run: echo "No commits in the selected window."
