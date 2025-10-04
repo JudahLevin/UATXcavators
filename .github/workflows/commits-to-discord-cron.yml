@@ -3,7 +3,7 @@ name: Post last X hours of commits to Discord (cron)
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # or */5 for 5-minute ticks; times are UTC
+    - cron: "*/1 * * * *"   # or */5 for 5-minute ticks; times are UTC
   workflow_dispatch:
     inputs:
       hours_back:
