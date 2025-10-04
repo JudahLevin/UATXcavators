@@ -1,8 +1,9 @@
+# .github/workflows/commits-to-discord-cron.yml
 name: Post last X hours of commits to Discord (cron)
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # every 30 minutes
+    - cron: "*/30 * * * *"   # or */5 for 5-minute ticks; times are UTC
   workflow_dispatch:
     inputs:
       hours_back:
@@ -18,21 +19,17 @@ jobs:
   poll:
     runs-on: ubuntu-latest
     permissions:
-      contents: read   # allow API read; default GITHUB_TOKEN works for this repo
+      contents: read
     env:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # provided by Actions automatically
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Install deps
-        run: pip install requests
-
+      - run: pip install requests openai
       - name: Post digest to Discord
         run: |
           HOURS_BACK=${{ github.event.inputs.hours_back || '6' }}
