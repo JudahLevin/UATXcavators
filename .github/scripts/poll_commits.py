@@ -75,7 +75,11 @@ def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[st
         f"on branch '{branch}' from the last {hours:g} hours. "
         f"Write 2–5 concise sentences for non-developers. "
         f"Group by themes (features, fixes, refactors), avoid file paths/SHAs, and keep it neutral.\n\n"
-        f"Commits:\n" + "\n".join(subset)
+        f"Also, if spreadsheet edit JSON entries are provided, summarize the change in plain English "
+        f"(who edited, which sheet/cell, and what the new text says). Focus on the description of the change "
+        f"rather than the technical cell coordinates.\n\n"
+        f"Commits:\n" + "\n".join(subset) +
+        "\n\nSpreadsheet Changes:\n" + str(spreadsheet_json)
     )
 
     # OpenAI Responses API (text generation).
