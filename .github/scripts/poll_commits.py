@@ -67,7 +67,6 @@ def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[st
     if not OPENAI_API_KEY or not bullets:
         return ""
 
-    # Keep prompt small to control tokens/cost; include only first N bullets
     max_bullets = 25
     subset = bullets[:max_bullets]
     prompt = (
@@ -78,7 +77,7 @@ def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[st
         f"Also, if spreadsheet edit JSON entries are provided, summarize the change in plain English "
         f"(who edited, which sheet/cell, and what the new text says). Focus on the description of the change "
         f"rather than the technical cell coordinates.\n\n"
-        f"Commits:\n" + "\n".join(subset) +
+        f"Commits:\n{'\n'.join(subset)}"
     )
 
     # OpenAI Responses API (text generation).
