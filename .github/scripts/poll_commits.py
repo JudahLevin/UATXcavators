@@ -69,6 +69,8 @@ def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[st
 
     max_bullets = 25
     subset = bullets[:max_bullets]
+    subset_text = "\n".join(subset)  # <-- precompute to avoid backslash in f-string expression
+
     prompt = (
         f"You are a release-notes assistant. Summarize recent GitHub commits for {repo} "
         f"on branch '{branch}' from the last {hours:g} hours. "
@@ -77,7 +79,7 @@ def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[st
         f"Also, if spreadsheet edit JSON entries are provided, summarize the change in plain English "
         f"(who edited, which sheet/cell, and what the new text says). Focus on the description of the change "
         f"rather than the technical cell coordinates.\n\n"
-        f"Commits:\n{'\n'.join(subset)}"
+        f"Commits:\n{subset_text}"
     )
 
     # OpenAI Responses API (text generation).
