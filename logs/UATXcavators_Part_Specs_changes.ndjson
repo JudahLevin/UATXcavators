@@ -5,3 +5,4 @@
 {"ts":"2025-10-05T20:38:48.415Z","sheet":"Cost Breakdown II","a1":"H2","row":2,"col":8,"old":null,"new":"Purchased","user":null}
 {"ts":"2025-10-05T20:39:36.453Z","sheet":"Cost Breakdown II","a1":"H3","row":3,"col":8,"old":null,"new":"=IF(G3 = $0, Yes, No)","user":null}
 {"ts":"2025-10-05T20:39:47.147Z","sheet":"Cost Breakdown II","a1":"H3","row":3,"col":8,"old":"ErrorValue{type=ERROR, messageId=PARSE_ERROR, arguments=[]}","new":"=IF(G3 = $0, \"Yes\", \"No\")","user":null}
+{"ts":"2025-10-05T20:40:02.227Z","sheet":"Cost Breakdown II","a1":"H3","row":3,"col":8,"old":"ErrorValue{type=ERROR, messageId=PARSE_ERROR, arguments=[]}","new":"=IF(G3 = \"$0\", \"Yes\", \"No\")","user":null}
