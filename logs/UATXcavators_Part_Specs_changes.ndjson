@@ -34,3 +34,4 @@
 {"ts":"2025-10-05T20:43:50.915Z","sheet":"Conditioning BOM","a1":"C3","row":3,"col":3,"old":"40-50","new":"40","user":null}
 {"ts":"2025-10-05T20:44:58.407Z","sheet":"Conditioning BOM","a1":"B13","row":13,"col":2,"old":"MSC # 74204884","new":null,"user":null}
 {"ts":"2025-10-05T20:45:03.853Z","sheet":"Conditioning BOM","a1":"A13","row":13,"col":1,"old":"Conditioner tube","new":"Conditioner tube, MSC # 74204884","user":null}
+{"ts":"2025-10-05T20:45:06.843Z","sheet":"Conditioning BOM","a1":"B13","row":13,"col":2,"old":null,"new":"1","user":null}
