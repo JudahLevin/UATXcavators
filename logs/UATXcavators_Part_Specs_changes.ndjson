@@ -11,3 +11,4 @@
 {"ts":"2025-10-05T20:40:56.906Z","sheet":"Cost Breakdown II","a1":"G15","row":15,"col":7,"old":"0.0","new":"0","user":null}
 {"ts":"2025-10-05T20:41:05.162Z","sheet":"Cost Breakdown II","a1":"H15","row":15,"col":8,"old":"No","new":"=IF(G15 = \"$0\", \"Yes\", \"No\")","user":null}
 {"ts":"2025-10-05T20:41:10.482Z","sheet":"Cost Breakdown II","a1":"H15","row":15,"col":8,"old":"No","new":"Yes","user":null}
+{"ts":"2025-10-05T20:41:25.352Z","sheet":"Cost Breakdown II","a1":"H49","row":49,"col":8,"old":null,"new":"No","user":null}
