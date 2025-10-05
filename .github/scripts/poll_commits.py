@@ -79,7 +79,6 @@ def summarize_with_openai(repo: str, branch: str, hours: float, bullets: List[st
         f"(who edited, which sheet/cell, and what the new text says). Focus on the description of the change "
         f"rather than the technical cell coordinates.\n\n"
         f"Commits:\n" + "\n".join(subset) +
-        "\n\nSpreadsheet Changes:\n" + str(spreadsheet_json)
     )
 
     # OpenAI Responses API (text generation).
