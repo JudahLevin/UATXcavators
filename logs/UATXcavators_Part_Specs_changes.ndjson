@@ -59,3 +59,4 @@
 {"ts":"2025-10-05T21:58:06.803Z","sheet":"Conditioning BOM","a1":"A61","row":61,"col":1,"old":"Rotary Join ","new":"Rotary Joint","user":null}
 {"ts":"2025-10-05T21:58:20.738Z","sheet":"Conditioning BOM","a1":"C62","row":62,"col":3,"old":"1184.28","new":null,"user":null}
 {"ts":"2025-10-05T22:00:15.241Z","sheet":"Conditioning BOM","a1":"C62","row":62,"col":3,"old":null,"new":"= SUM(C49:)","user":null}
+{"ts":"2025-10-05T22:00:23.837Z","sheet":"Conditioning BOM","a1":"C62","row":62,"col":3,"old":"ErrorValue{type=ERROR, messageId=PARSE_ERROR, arguments=[]}","new":"=SUM(C49:)","user":null}
