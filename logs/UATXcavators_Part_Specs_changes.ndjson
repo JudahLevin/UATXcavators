@@ -30,3 +30,4 @@
 {"ts":"2025-10-05T20:42:24.656Z","sheet":"Cost Breakdown II","a1":"H80","row":80,"col":8,"old":null,"new":"Yes","user":null}
 {"ts":"2025-10-05T20:42:44.164Z","sheet":"Cost Breakdown II","a1":"H3","row":3,"col":8,"old":"No","new":"No","user":null}
 {"ts":"2025-10-05T20:43:13.671Z","sheet":"Conditioning BOM","a1":"A1","row":1,"col":1,"old":null,"new":"Conditioning BOM","user":null}
+{"ts":"2025-10-05T20:43:42.941Z","sheet":"Conditioning BOM","a1":"C13","row":13,"col":3,"old":"682.0","new":"=SUM(C2:C12)","user":null}
