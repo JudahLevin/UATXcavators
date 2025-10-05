@@ -63,3 +63,4 @@
 {"ts":"2025-10-05T22:00:34.080Z","sheet":"Conditioning BOM","a1":"C62","row":62,"col":3,"old":"ErrorValue{type=ERROR, messageId=PARSE_ERROR, arguments=[]}","new":"=SUM(C49:C57)","user":null}
 {"ts":"2025-10-05T22:00:47.618Z","sheet":"Conditioning BOM","a1":"C57","row":57,"col":3,"old":"80.0","new":null,"user":null}
 {"ts":"2025-10-05T22:01:50.947Z","sheet":"Conditioning BOM","a1":"C34","row":34,"col":3,"old":"410.83","new":null,"user":null}
+{"ts":"2025-10-05T22:01:56.944Z","sheet":"Conditioning BOM","a1":"F25","row":25,"col":6,"old":"1/4\" threaded fan nozzles (80°) — choose stainless or polypropylene depending on abrasion. Use identical nozzles for balanced flow. :contentReference[oaicite:4]{index=4}","new":"1/4\" threaded fan nozzles (80°) — choose stainless or polypropylene depending on abrasion. Use identical nozzles for balanced flow.","user":null}
