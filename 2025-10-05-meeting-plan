@@ -61,15 +61,7 @@ Judah presents October Tests and Ground Rules, NABC rules pp. 9-13, pp. 26-28, F
 - Determine hydraulics vs electric. Determine multiple motors vs one motor.  
 - Determine where to place sensors  
 - Review simulations and designs based on TBC, AECOM, and Alex’s advice  
-
 - Record low and high alarm values for all mechanical sensor values.  
 - Source a screw jack and a jack motor  
 - Source metal and fab shops  
 
-- GPT-calculate/estimate the following:  
-  - Jack motor specs  
-  - Bolt sizes  
-  - Steel dimensions  
-  - Counterweights needed  
-  - Temperature and cooling requirements for inside the TBM, the muck reservoir, and the motor  
-  - Mucking specs (e.g., auger RPM, pitch, diameter)  
