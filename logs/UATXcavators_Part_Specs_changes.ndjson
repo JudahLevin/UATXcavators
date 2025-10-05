@@ -8,3 +8,4 @@
 {"ts":"2025-10-05T20:40:02.227Z","sheet":"Cost Breakdown II","a1":"H3","row":3,"col":8,"old":"ErrorValue{type=ERROR, messageId=PARSE_ERROR, arguments=[]}","new":"=IF(G3 = \"$0\", \"Yes\", \"No\")","user":null}
 {"ts":"2025-10-05T20:40:17.389Z","sheet":"Cost Breakdown II","a1":"H4","row":4,"col":8,"old":null,"new":null,"user":null}
 {"ts":"2025-10-05T20:40:43.788Z","sheet":"Cost Breakdown II","a1":"H15","row":15,"col":8,"old":"No","new":"=IF(G15 = \"0\", \"Yes\", \"No\")","user":null}
+{"ts":"2025-10-05T20:40:56.906Z","sheet":"Cost Breakdown II","a1":"G15","row":15,"col":7,"old":"0.0","new":"0","user":null}
