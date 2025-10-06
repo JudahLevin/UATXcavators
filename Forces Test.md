@@ -1,5 +1,38 @@
 
-option 1: 
+Best option $100: these top two links should be good just look through them and make sure there good.
+
+Motor $40
+https://www.amazon.com/Torque-Stepper-Motor-425oz-Router/dp/B00PNEPW4C/ref=sr_1_1?crid=2U83UYKAHNV1X&dib=eyJ2IjoiMSJ9.SGy6Og06nN_iXEVu7cwCr3qK7E0oZ4m03x-iNOV5HCvcqmKcD3rX3IOb6p4PxwXwPMTNHsMABzoqW-mNwoBTYjxQQwbHAQLJ-mBDdLbHDr54yM-egcyc_5y29e-M9M2OfIsA25XrypZNXwiF2Fn_4vPwgL8IdxllMIAavkV1hZmVIUmHgWzMVnA6zR28FzuMwBlhRNL0S0FkcJhgGutXhm3mxsZrNnuESKKxvaf0xWFJYls0L9JyF28sM5-TxnydVVzGh8gSTtaYbNR39eogbuwPSEPCPTIdIpf-jShkWYI.blvrlyeECbMJrzQajNCz32La6zuojr-11D_I2kpLwBI&dib_tag=se&keywords=NEMA+23+3.0+Nm+stepper&qid=1759716152&s=industrial&sprefix=nema+23+3.0+nm+stepper%2Cindustrial%2C373&sr=1-1
+
+
+stepper 20:1 $60
+https://www.amazon.com/STEPPERONLINE-Planetary-Gearbox-Gear-Ratio/dp/B0BPGNXJTJ/ref=rvi_d_sccl_1/132-1793989-5894942?pd_rd_w=5Pj9w&content-id=amzn1.sym.f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_p=f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_r=S2SG06A5EY1SKQWC690X&pd_rd_wg=Vjam8&pd_rd_r=2121941b-5559-489c-81fe-6dac71b788ad&pd_rd_i=B097SD1ZLQ&th=1
+
+
+Here is a comprehensive chart for your **NEMA 23 stepper motor with MGL 20:1 planetary gearbox**, including motor max torque, gearbox max torque, output RPM, and torque under axial loads for a 2-inch radius TBM cutter head:
+
+| Axial Load (lb) | Axial Force (N) | Required Torque (Nm) | Motor Torque (Nm) | Gearbox Output Torque (Nm) | Max Motor Torque (Nm) | Max Gearbox Torque (Nm) | Max Output RPM |
+| --------------- | --------------- | -------------------- | ----------------- | -------------------------- | --------------------- | ----------------------- | -------------- |
+| 0               | 0               | 0                    | 3.0               | 60.0                       | 3.0                   | 60.0                    | 250            |
+| 50              | 222.4           | 11.3                 | 0.565             | 11.3                       | 3.0                   | 60.0                    | 203            |
+| 90              | 400.3           | 20.3                 | 1.015             | 20.3                       | 3.0                   | 60.0                    | 165            |
+| 130             | 578.3           | 29.4                 | 1.47              | 29.4                       | 3.0                   | 60.0                    | 128            |
+
+**Notes:**
+
+* **Motor Torque (Nm)** is the torque required from the motor to achieve the output torque, accounting for the 20:1 gearbox.
+* **Gearbox Output Torque (Nm)** is motor torque multiplied by gear ratio.
+* **Max Motor Torque (3.0 Nm)** is the holding torque at 0 RPM.
+* **Max Gearbox Torque (60 Nm)** is the gearbox-amplified holding torque.
+* **Max Output RPM** is calculated as output speed after the 20:1 gearbox based on motor torque-speed curve.
+
+
+
+
+
+
+
+ other option 1: 
 4:1 Stepperonline $72- cannot withstand max axiel force
  https://www.amazon.com/STEPPERONLINE-Planetary-Gearbox-Stepper-Router/dp/B00WAUZ1WU/ref=rvi_d_sccl_3/132-1793989-5894942?pd_rd_w=Npcb2&content-id=amzn1.sym.f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_p=f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_r=9X5JABPF90VE59973WAV&pd_rd_wg=85ZYW&pd_rd_r=665aa92f-246c-45c7-9eab-4a781b6537ee&pd_rd_i=B00WAUZ1WU&psc=1
 
@@ -9,7 +42,7 @@ option 1:
 | 90 lb  | 19.6 Nm        | 5.13 Nm               | 4.78 Nm            | 82 RPM         |
 | 130 lb | 29.4 Nm        | 7.69 Nm               | 4.78 Nm            | 41 RPM         |
 
-option 2:
+other option 2:
 47;1 Stepperonline $73-cannot max Rpm too slow
 https://www.amazon.com/47-Planetary-Gearbox-Stepper-Router/dp/B00WAV322U/ref=rvi_d_sccl_1/132-1793989-5894942?pd_rd_w=oACzy&content-id=amzn1.sym.f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_p=f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_r=VF60VEEKAVNQW9BD4EXS&pd_rd_wg=Uy459&pd_rd_r=eec13e96-2d62-4d53-917e-bd83e39eeb7f&pd_rd_i=B00WAV322U&psc=1
 
@@ -22,7 +55,7 @@ https://www.amazon.com/47-Planetary-Gearbox-Stepper-Router/dp/B00WAV322U/ref=rvi
 | 60 (momentary)      | 1.77              | 150 %                | 500                      | 0.07       |
 
 
-Option 3: combination $93: incapable of handling max Axial load
+other Option 3 and 4: combination $93: incapable of handling max Axial load
 
 motor $40
 https://www.amazon.com/Torque-Stepper-Motor-425oz-Router/dp/B00PNEPW4C/ref=sr_1_1?crid=2U83UYKAHNV1X&dib=eyJ2IjoiMSJ9.SGy6Og06nN_iXEVu7cwCr3qK7E0oZ4m03x-iNOV5HCvcqmKcD3rX3IOb6p4PxwXwPMTNHsMABzoqW-mNwoBTYjxQQwbHAQLJ-mBDdLbHDr54yM-egcyc_5y29e-M9M2OfIsA25XrypZNXwiF2Fn_4vPwgL8IdxllMIAavkV1hZmVIUmHgWzMVnA6zR28FzuMwBlhRNL0S0FkcJhgGutXhm3mxsZrNnuESKKxvaf0xWFJYls0L9JyF28sM5-TxnydVVzGh8gSTtaYbNR39eogbuwPSEPCPTIdIpf-jShkWYI.blvrlyeECbMJrzQajNCz32La6zuojr-11D_I2kpLwBI&dib_tag=se&keywords=NEMA+23+3.0+Nm+stepper&qid=1759716152&s=industrial&sprefix=nema+23+3.0+nm+stepper%2Cindustrial%2C373&sr=1-1
@@ -40,7 +73,7 @@ https://www.amazon.com/STEPPERONLINE-MGL-Gear-Ratio-Planetary/dp/B0DY13MZSV/ref=
 
 
 
-Stepper 50:1 60
+Stepper 50:1 $60
 
 https://www.amazon.com/STEPPERONLINE-Planetary-Gearbox-Gear-Ratio/dp/B097SD1ZLQ/ref=rvi_d_sccl_1/132-1793989-5894942?pd_rd_w=nMdYb&content-id=amzn1.sym.f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_p=f5690a4d-f2bb-45d9-9d1b-736fee412437&pf_rd_r=TSB6YMPZEE0HT8C4Y5B6&pd_rd_wg=3L4mW&pd_rd_r=0c2b91fd-f954-42ed-9178-e781dc7370b1&pd_rd_i=B097SD1ZLQ&th=1
 
