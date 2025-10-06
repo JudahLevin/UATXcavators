@@ -12,7 +12,8 @@ Here is the current roster, including the subTeam "heads":
 - Pierce Crist  
 - Samuel McClure  
 - Jack Porter  
-- Hunter Lin  
+- Hunter Lin
+- JR Crawford
 - Thomas Olson  
 - Sam Indyk - Conditioning; and Judah Levin - Mechanical/Mucking; (Heads)  
 
