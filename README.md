@@ -11,7 +11,7 @@ Relevant spreadsheet links:
 
 ## [UATXcavators Part Specs](https://docs.google.com/spreadsheets/d/1raRMg_BoY4irnRXD5xzt5HqwL2nL2Hntu02hM1NV3XU/edit?usp=sharing)
 
-## [Test BOMs](https://docs.google.com/spreadsheets/d/1lJCDDlZyGSyfioBKFrP53OomWjaw6V8aN5IbmmCJIio/edit?usp=sharing)
+## [Cutter Head CAD Iterations](https://docs.google.com/spreadsheets/d/1SQ15oFQ9yvSSL_csQQLxruhzzBsGiHOcUOlRq0fi46o/edit?usp=sharing)
 
 ## [Sensors + Actuators + Controls List](https://docs.google.com/spreadsheets/d/1id_4xzdn1a4dehJwOan9L2Y5gO20BgIbmmOzMaP8oyI/edit?usp=sharing)
 
