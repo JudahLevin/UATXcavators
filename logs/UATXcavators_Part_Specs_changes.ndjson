@@ -178,3 +178,4 @@
 {"ts":"2025-10-08T04:36:43.682Z","sheet":"Conditioning BOM","a1":"D14","row":14,"col":4,"old":null,"new":null,"user":null}
 {"ts":"2025-10-08T04:36:51.189Z","sheet":"Conditioning BOM","a1":"D14","row":14,"col":4,"old":null,"new":"Supplyhouse","user":null}
 {"ts":"2025-10-08T04:37:46.917Z","sheet":"Conditioning BOM","a1":"F14","row":14,"col":6,"old":null,"new":"Forking tee that allows conditioner to run in, and water to run through with the proper sizes and threading. Adapters may be needed, and a different tee / jerryrigged something may have to be used instead. ","user":null}
+{"ts":"2025-10-08T04:38:07.893Z","sheet":"Conditioning BOM","a1":"A19","row":19,"col":1,"old":null,"new":"Optional but suggested items below:","user":null}
