@@ -122,3 +122,4 @@
 {"ts":"2025-10-08T03:30:25.556Z","sheet":"Conditioning BOM","a1":"E22","row":22,"col":5,"old":"https://www.amazon.com/s?k=ball+valve+1%2F2+inch","new":null,"user":null}
 {"ts":"2025-10-08T03:30:47.873Z","sheet":"Conditioning BOM","a1":"D7","row":7,"col":4,"old":null,"new":null,"user":null}
 {"ts":"2025-10-08T03:30:52.061Z","sheet":"Conditioning BOM","a1":"D1","row":1,"col":4,"old":"Vendor","new":"Vendor / Supplier","user":null}
+{"ts":"2025-10-08T03:30:57.002Z","sheet":"Conditioning BOM","a1":"D7","row":7,"col":4,"old":"MasterRoc ACP214","new":"MasterRoc ","user":null}
