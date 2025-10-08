@@ -183,3 +183,4 @@
 {"ts":"2025-10-08T04:39:06.105Z","sheet":"Conditioning BOM","a1":"F11","row":11,"col":6,"old":null,"new":"If provided, the hosing below @","user":null}
 {"ts":"2025-10-08T04:39:23.883Z","sheet":"Conditioning BOM","a1":"F11","row":11,"col":6,"old":"If provided, the hosing below @","new":"If provided, the braided hosing below is not needed! ","user":null}
 {"ts":"2025-10-08T04:41:20.298Z","sheet":"Conditioning BOM","a1":"A16","row":16,"col":1,"old":null,"new":"Highlighted ","user":null}
+{"ts":"2025-10-08T04:41:22.935Z","sheet":"Conditioning BOM","a1":"F15","row":15,"col":6,"old":"Rounded budget estimate","new":null,"user":null}
