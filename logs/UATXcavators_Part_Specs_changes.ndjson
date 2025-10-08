@@ -130,3 +130,4 @@
 {"ts":"2025-10-08T03:31:09.105Z","sheet":"Conditioning BOM","a1":"E7","row":7,"col":5,"old":null,"new":null,"user":null}
 {"ts":"2025-10-08T03:31:26.218Z","sheet":"Conditioning BOM","a1":"F7","row":7,"col":6,"old":null,"new":"Conditioner for the TBM","user":null}
 {"ts":"2025-10-08T03:31:31.866Z","sheet":"Conditioning BOM","a1":"F7","row":7,"col":6,"old":"Conditioner for the TBM","new":"Conditioner for the TBM, to be mixed with water. ","user":null}
+{"ts":"2025-10-08T03:34:06.541Z","sheet":"Conditioning BOM","a1":"A6","row":6,"col":1,"old":"1/4 \" ID Silicone Tubing","new":"1/4 \" ID x 3/8\" OD  Silicone Tubing","user":null}
