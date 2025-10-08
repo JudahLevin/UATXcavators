@@ -124,3 +124,4 @@
 {"ts":"2025-10-08T03:30:52.061Z","sheet":"Conditioning BOM","a1":"D1","row":1,"col":4,"old":"Vendor","new":"Vendor / Supplier","user":null}
 {"ts":"2025-10-08T03:30:57.002Z","sheet":"Conditioning BOM","a1":"D7","row":7,"col":4,"old":"MasterRoc ACP214","new":"MasterRoc ","user":null}
 {"ts":"2025-10-08T03:31:00.075Z","sheet":"Conditioning BOM","a1":"B7","row":7,"col":2,"old":null,"new":null,"user":null}
+{"ts":"2025-10-08T03:31:03.004Z","sheet":"Conditioning BOM","a1":"A7","row":7,"col":1,"old":"Conditioner","new":"Conditioner - ACP214","user":null}
