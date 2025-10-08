@@ -186,3 +186,4 @@
 {"ts":"2025-10-08T04:41:22.935Z","sheet":"Conditioning BOM","a1":"F15","row":15,"col":6,"old":"Rounded budget estimate","new":null,"user":null}
 {"ts":"2025-10-08T04:41:27.669Z","sheet":"Conditioning BOM","a1":"A15","row":15,"col":1,"old":"Estimated total (approx)","new":"Estimated total ","user":null}
 {"ts":"2025-10-08T04:41:33.576Z","sheet":"Conditioning BOM","a1":"A15","row":15,"col":1,"old":"Estimated total ","new":"Estimated total (not including shipping)","user":null}
+{"ts":"2025-10-08T04:41:38.303Z","sheet":"Conditioning BOM","a1":"A16","row":16,"col":1,"old":"Highlighted ","new":"Highlighted boxes are buy-nows","user":null}
