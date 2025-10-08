@@ -144,3 +144,4 @@
 {"ts":"2025-10-08T03:52:07.663Z","sheet":"Conditioning BOM","a1":"F8","row":8,"col":6,"old":"Low-cost option for small, low-speed rotation. Verify sealing for water pressure.","new":"Low-cost option for small, relatively low-speed rotation. Verify sealing for water pressure.","user":null}
 {"ts":"2025-10-08T03:52:32.048Z","sheet":"Conditioning BOM","a1":"C8","row":8,"col":3,"old":null,"new":"40.29","user":null}
 {"ts":"2025-10-08T03:52:34.334Z","sheet":"Conditioning BOM","a1":"B8","row":8,"col":2,"old":null,"new":"1","user":null}
+{"ts":"2025-10-08T03:54:22.528Z","sheet":"Conditioning BOM","a1":"B9","row":9,"col":2,"old":null,"new":"1","user":null}
