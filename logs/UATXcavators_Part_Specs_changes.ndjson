@@ -110,3 +110,4 @@
 {"ts":"2025-10-08T03:22:19.484Z","sheet":"Conditioning BOM","a1":"B5","row":5,"col":2,"old":"1.0","new":"1 (may need several)","user":null}
 {"ts":"2025-10-08T03:23:30.311Z","sheet":"Conditioning BOM","a1":"F22","row":22,"col":6,"old":null,"new":null,"user":null}
 {"ts":"2025-10-08T03:23:34.303Z","sheet":"Conditioning BOM","a1":"D22","row":22,"col":4,"old":null,"new":null,"user":null}
+{"ts":"2025-10-08T03:23:37.664Z","sheet":"Conditioning BOM","a1":"C22","row":22,"col":3,"old":"75.0","new":"~75","user":null}
