@@ -11,12 +11,12 @@
     alarm, warning, and interlock behavior directly from your CSV data.
 
     Features implemented:
-    ✅ Low / High warning and alarm thresholds
-    ✅ Trip delays before alarm activation
-    ✅ Auto-clear when value returns to safe zone
-    ✅ Interlocks for motor and actuator systems
-    ✅ Manual reset via Serial Monitor
-    ✅ Simulated random readings for testing
+    Low / High warning and alarm thresholds
+    Trip delays before alarm activation
+    Auto-clear when value returns to safe zone
+    Interlocks for motor and actuator systems
+    Manual reset via Serial Monitor
+    Simulated random readings for testing
     ========================================================================
 */
 
@@ -34,7 +34,8 @@
 // Each Channel stores threshold and timing info for one sensor.
 // Runtime values (alarm states, timers, etc.) are tracked separately.
 //
-struct Channel {
+struct ChannelOld 
+{
     const char* name;            // Sensor name
     const char* units;           // Units (A, N, RPM, etc.)
     float lowWarn;               // Low warning threshold
@@ -54,7 +55,7 @@ struct Channel {
 
 // Old stuff (delete):
 
-Channel channels[] = {
+ChannelOld channels[] = {
     {"Motor Current", "A", 3.5, 3.0, 5.0, 6.0, "Motor off", 200, 4.8, 5.8},
     {"Motor Speed", "RPM", 25.0, 15.0, 45.0, 50.0, "Motor off", 500, 17.0, 48.0},
     {"Reaction Force", "N", 164.04, 131.23, 216.54, 249.34, "Motor off", 200, 244.0, 244.0},
@@ -69,12 +70,14 @@ Channel channels[] = {
 
 const int NUM_CHANNELS = 8;
 
-enum action {
+enum action 
+{
     motorOff,
     actuatorOff
 };
 
-enum channel {
+enum channel 
+{
     motorCurrent,
     motorSpeed,
     reactionForce,
@@ -85,7 +88,8 @@ enum channel {
     linearSpeed
 };
 
-enum fields {
+enum field 
+{
     lowWarn,
     lowAlarm,
     highWarn,
@@ -96,10 +100,21 @@ enum fields {
     clearHigh
 };
 
+struct Channel 
+{
+    float lowWarn;               // Low warning threshold
+    float lowAlarm;              // Low alarm threshold
+    float highWarn;              // High warning threshold
+    float highAlarm;             // High alarm threshold
+    action interlockAction;      // "Motor off" or "Actuator off"
+    uint32_t tripDelayMs;        // Required time out-of-range before alarm triggers
+    float clearLow;              // Safe lower bound to clear alarm
+    float clearHigh;             // Safe upper bound to clear alarm
+};
 
-// 
+// Global data
 struct Global {
-    double channelData[8][8] = {
+    const double channelData[8][8] = {
         {3.5, 3.0, 5.0, 6.0, motorOff, 200, 4.8, 5.8},
         {25.0, 15.0, 45.0, 50.0, motorOff, 500, 17.0, 48.0},
         {164.04, 131.23, 216.54, 249.34, motorOff, 200, 244.0, 244.0},
@@ -109,6 +124,10 @@ struct Global {
         {0.0, 0.0, 0.45, 0.50, actuatorOff, 0, 0.497, 0.497},
         {3.0, 2.0, 7.0, 8.0, actuatorOff, 500, 2.5, 7.5}
     };
+
+    bool alarmLatched[8] = {false};
+    uint32_t violationStart[8] = {0};
+    float currentValue[8] = {0.0};
 };
 
 Global global;
@@ -133,14 +152,15 @@ bool inRange(float v) {
 // This runs once per cycle for each sensor channel.
 //
 // Steps:
-// 1️⃣ Generate simulated random reading (1.0 – 8.0)
-// 2️⃣ Check if it violates a threshold
-// 3️⃣ Apply trip-delay logic before confirming alarm
-// 4️⃣ Latch alarms and disable motor/actuator outputs
-// 5️⃣ Auto-clear after 2 s stable in safe range
+// 1️. Generate simulated random reading (1.0 – 8.0)
+// 2️. Check if it violates a threshold
+// 3️. Apply trip-delay logic before confirming alarm
+// 4️. Latch alarms and disable motor/actuator outputs
+// 5️. Auto-clear after 2 s stable in safe range
 //
-void updateChannel(int i, uint32_t now) {
-    Channel &ch = channels[i];
+void updateChannel(int i, uint32_t now) 
+{
+    ChannelOld &ch = channels[i];
 
     // Step 1 — Simulate a random live reading (replace with real sensor later)
     currentValue[i] = random(100, 800) / 100.0;  // 1.00 – 8.00
@@ -155,30 +175,39 @@ void updateChannel(int i, uint32_t now) {
     else if (inRange(ch.highWarn) && currentValue[i] >= ch.highWarn) warningCondition = true;
 
     // Step 3 — Trip delay logic: alarm triggers only after sustained violation
-    if (alarmCondition && !alarmLatched[i]) {
-        if (violationStart[i] == 0) {
+    if (alarmCondition && !alarmLatched[i]) 
+    {
+        if (violationStart[i] == 0) 
+        {
             violationStart[i] = now;
         }
-        if (now - violationStart[i] >= ch.tripDelayMs) {
+        if (now - violationStart[i] >= ch.tripDelayMs) 
+        {
             alarmLatched[i] = true;
             Serial.printf("🚨 ALARM: %s = %.2f %s\n", ch.name, currentValue[i], ch.units);
         }
-    } else if (!alarmCondition) {
+    } 
+    else if (!alarmCondition) 
+    {
         violationStart[i] = 0;  // reset timer if safe again
     }
 
     // Step 4 — Print warnings (non-latching)
-    if (warningCondition && !alarmLatched[i]) {
+    if (warningCondition && !alarmLatched[i]) 
+    {
         Serial.printf("⚠️  WARNING: %s = %.2f %s\n", ch.name, currentValue[i], ch.units);
     }
 
     // Step 5 — Auto-clear logic: if value back in safe zone for > 2 s
-    if (alarmLatched[i] && inRange(ch.clearLow) && currentValue[i] <= ch.clearHigh && currentValue[i] >= ch.clearLow) {
+    if (alarmLatched[i] && inRange(ch.clearLow) && currentValue[i] <= ch.clearHigh && currentValue[i] >= ch.clearLow) 
+    {
         static uint32_t safeStart[8] = {0};
-        if (safeStart[i] == 0) {
+        if (safeStart[i] == 0) 
+        {
             safeStart[i] = now;
         }
-        if (now - safeStart[i] > 2000) {  // 2 seconds stable
+        if (now - safeStart[i] > 2000) // 2 seconds stable
+        {  
             alarmLatched[i] = false;
             safeStart[i] = 0;
             Serial.printf("✅ Cleared: %s returned to safe range (%.2f %s)\n", ch.name, currentValue[i], ch.units);
@@ -190,18 +219,23 @@ void updateChannel(int i, uint32_t now) {
 //
 // If any channel alarm is latched, disable motor or actuator outputs.
 //
-void handleInterlocks() {
+void handleInterlocks() 
+{
     bool motorTrip = false;
     bool actuatorTrip = false;
 
     // Check each channel for an active alarm
-    for (int i = 0; i < NUM_CHANNELS; i++) {
-        Channel &ch = channels[i];
-        if (alarmLatched[i]) {
-            if (String(ch.interlockAction).indexOf("Motor") >= 0) {
+    for (int i = 0; i < NUM_CHANNELS; i++) 
+    {
+        ChannelOld &ch = channels[i];
+        if (alarmLatched[i]) 
+        {
+            if (String(ch.interlockAction).indexOf("Motor") >= 0) 
+            {
                 motorTrip = true;
             }
-            if (String(ch.interlockAction).indexOf("Actuator") >= 0) {
+            if (String(ch.interlockAction).indexOf("Actuator") >= 0) 
+            {
                 actuatorTrip = true;
             }
         }
@@ -212,12 +246,15 @@ void handleInterlocks() {
     digitalWrite(ACTUATOR_PIN, actuatorTrip ? LOW : HIGH);
 
     // Print once whenever interlock state changes
-    if (motorTrip || actuatorTrip) {
+    if (motorTrip || actuatorTrip) 
+    {
         Serial.println("\n⚡ INTERLOCK TRIGGERED ⚡");
-        if (motorTrip) {
+        if (motorTrip) 
+        {
             Serial.println("🔴 Motor Disabled");
         }
-        if (actuatorTrip) { 
+        if (actuatorTrip) 
+        { 
             Serial.println("🔴 Actuator Disabled");
         }
         Serial.println();
@@ -228,8 +265,10 @@ void handleInterlocks() {
 //
 // Type "reset" in the Serial Monitor to clear all alarms.
 //
-void manualReset() {
-    for (int i = 0; i < NUM_CHANNELS; i++) {
+void manualReset() 
+{
+    for (int i = 0; i < NUM_CHANNELS; i++) 
+    {
         alarmLatched[i] = false;
         violationStart[i] = 0;
     }
@@ -242,7 +281,8 @@ void manualReset() {
 //
 // Runs once at startup.
 //
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
   delay(500);
   Serial.println("=== TBM CONTROLLER – FULL SIMULATION MODE ===");
@@ -260,20 +300,24 @@ void setup() {
 // Runs continuously.  Each cycle checks all channels, applies logic,
 // and updates outputs.
 //
-void loop() {
+void loop() 
+{
     uint32_t now = millis(); // milliseconds since boot
 
     // Listen for serial commands (manual reset)
-    if (Serial.available()) {
+    if (Serial.available()) 
+    {
         String cmd = Serial.readStringUntil('\n');
         cmd.trim();
-        if (cmd.equalsIgnoreCase("reset")) {
+        if (cmd.equalsIgnoreCase("reset")) 
+        {
             manualReset();
         }
     }
 
     // Process each channel
-    for (int i = 0; i < NUM_CHANNELS; i++) {
+    for (int i = 0; i < NUM_CHANNELS; i++) 
+    {
         updateChannel(i, now);
     }
 
