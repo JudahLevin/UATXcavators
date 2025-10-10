@@ -22,10 +22,10 @@ Steps:
 5. Place the dirt in the container and add a controlled amount of water (e.g., 2 tablespoons).
 6. Weigh the dirt and record the density. The volume, weight, and density must be held constant for all tests (so add and subtract as necessary).
 7. Take a Beyblade, clean off the dirt, and center it on the container's patted dirt.
-8. Place the fixed weight on the Beyblade for a fixed (TBD) number of seconds so that it presses into the dirt. Make sure there is no weight during the test.
-9. Mark a fixed distance away from the Beyblade to fix each rubber band end, and test a spot that slows down the velocity (allowing for more precise measurements and recordings). If you have time, try a new distance to test the cutter head types at a different angular velocity
-10. Set up a slo-mo camera in view of the cutters hitting the ground. 
-11. While holding the rubber bands, crank the Beyblade an incremental number of revolutions, starting at 1.
+8. Mark a fixed distance away from the Beyblade to fix each rubber band end, and test a spot that slows down the velocity (allowing for more precise measurements and recordings). If you have time, try a new distance to test the cutter head types at a different angular velocity.
+9. Set up a slo-mo camera in view of the cutters hitting the ground.
+10. While holding the rubber bands, crank the Beyblade an incremental number of revolutions, starting at 1.
+11. Place the fixed weight on the Beyblade for a fixed (TBD) number of seconds so that it presses into the dirt. Make sure there is no weight during the test.
 12. Then, hit record on the slo-mo and LET IT RIP.
 13. Let the Beyblade slow to a stop, then pick it up and snag a picture of the hole it made in the dirt.
 14. Take a measurement using the ruler of the deepest and shallowest crevice. Estimate the average crevice depth with a margin of error?
