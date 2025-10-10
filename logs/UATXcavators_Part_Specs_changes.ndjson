@@ -243,3 +243,4 @@
 {"ts":"2025-10-10T02:33:19.966Z","sheet":"Forces Test","a1":"A15","row":15,"col":1,"old":"Divine Lighting MDA15A","new":"Divine Lighting MDA15A","user":"judahlevin888@gmail.com"}
 {"ts":"2025-10-10T02:33:47.769Z","sheet":"Forces Test","a1":"C1","row":1,"col":3,"old":"Amazon List","new":"Amazon List","user":"judahlevin888@gmail.com"}
 {"ts":"2025-10-10T02:34:31.077Z","sheet":"Forces Test","a1":"A16","row":16,"col":1,"old":"Bussmann BK/HTB-26I-R HTB","new":"Bussmann BK/HTB-26I-R HTB","user":"judahlevin888@gmail.com"}
+{"ts":"2025-10-10T02:35:37.663Z","sheet":"Forces Test","a1":"C2","row":2,"col":3,"old":null,"new":"just in case simulating a pulse frequency with the esp32 doesn't work","user":"judahlevin888@gmail.com"}
