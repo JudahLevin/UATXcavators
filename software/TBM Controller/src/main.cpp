@@ -69,12 +69,12 @@ Channel channels[] = {
 
 const int NUM_CHANNELS = 8;
 
-enum class interlockAction {
+enum action {
     motorOff,
     actuatorOff
 };
 
-enum class channel {
+enum channel {
     motorCurrent,
     motorSpeed,
     reactionForce,
@@ -84,6 +84,34 @@ enum class channel {
     linearDisplacement,
     linearSpeed
 };
+
+enum fields {
+    lowWarn,
+    lowAlarm,
+    highWarn,
+    highAlarm,
+    interlockAction,
+    tripDelayMs,
+    clearLow,
+    clearHigh
+};
+
+
+// 
+struct Global {
+    double channelData[8][8] = {
+        {3.5, 3.0, 5.0, 6.0, motorOff, 200, 4.8, 5.8},
+        {25.0, 15.0, 45.0, 50.0, motorOff, 500, 17.0, 48.0},
+        {164.04, 131.23, 216.54, 249.34, motorOff, 200, 244.0, 244.0},
+        {25.0, 20.0, 33.0, 38.0, motorOff, 200, 37.0, 37.0},
+        {2.0, 1.5, 7.0, 8.0, actuatorOff, 200, 6.8, 7.8},
+        {155.69, 133.45, 578.27, 600.51, actuatorOff, 200, 578.0, 578.0},
+        {0.0, 0.0, 0.45, 0.50, actuatorOff, 0, 0.497, 0.497},
+        {3.0, 2.0, 7.0, 8.0, actuatorOff, 500, 2.5, 7.5}
+    };
+};
+
+Global global;
 
 // ========================= RUNTIME ARRAYS =========================
 //
