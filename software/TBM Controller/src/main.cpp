@@ -49,11 +49,8 @@ struct Channel {
 
 // ========================= CHANNEL INITIALIZATION =========================
 //
-// NEEDS TO BE PHASED OUT
+// Matches your CSV exactly.  These values define all limits and behavior.
 //
-
-// Old stuff (delete):
-
 Channel channels[] = {
     {"Motor Current", "A", 3.5, 3.0, 5.0, 6.0, "Motor off", 200, 4.8, 5.8},
     {"Motor Speed", "RPM", 25.0, 15.0, 45.0, 50.0, "Motor off", 500, 17.0, 48.0},
