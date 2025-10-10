@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // test
-//Earl's dvrk twisted beautiful maga test the quick brown fox jumped over all the lazy dogs
+// Earl's dvrk twisted beautiful maga test the quick brown fox jumped over all the lazy dogs
 
 /*
     ========================================================================
