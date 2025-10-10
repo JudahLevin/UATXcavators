@@ -254,3 +254,4 @@
 {"ts":"2025-10-10T02:49:07.438Z","sheet":"Forces Test","a1":"C14","row":14,"col":3,"old":null,"new":"includes M6 for the stepper motor and M4/M6 for gearbox","user":"judahlevin888@gmail.com"}
 {"ts":"2025-10-10T02:49:10.292Z","sheet":"Forces Test","a1":"C14","row":14,"col":3,"old":"includes M6 for the stepper motor and M4/M6 for gearbox","new":"includes M6 for motor and M4/M6 for gearbox","user":"judahlevin888@gmail.com"}
 {"ts":"2025-10-10T02:52:55.868Z","sheet":"Forces Test","a1":"C14","row":14,"col":3,"old":"includes M6 for motor and M4/M6 for gearbox","new":"includes M6 for motor, M4/M6 for gearbox, M4 for load cell","user":"judahlevin888@gmail.com"}
+{"ts":"2025-10-10T02:57:42.622Z","sheet":"Forces Test","a1":"D4","row":4,"col":4,"old":null,"new":"# removing from list to simplify test--torque can be computed from curve","user":"judahlevin888@gmail.com"}
