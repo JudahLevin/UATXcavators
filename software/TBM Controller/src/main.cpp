@@ -103,19 +103,6 @@ struct Global {
 
 Global global;
 
-// ========================= RUNTIME ARRAYS =========================
-//
-// These track the *current* state of each channel.
-//
-
-
-// ========================= UTILITY FUNCTION =========================
-
-// Helper to check if a float value is valid
-bool inRange(float v) {
-    return !isnan(v) && isfinite(v);
-}
-
 // ========================= CHANNEL UPDATE FUNCTION =========================
 //
 // This runs once per cycle for each sensor channel.
@@ -132,18 +119,17 @@ void updateChannel(int ch, uint32_t now)
     // Step 1 — Simulate a random live reading (replace with real sensor later)
     global.currentValue[ch] = random(100, 800) / 100.0;  // 1.00 – 8.00
 
-    bool alarmCondition = false;
-    bool warningCondition = false;
-
     // Step 2 — Evaluate thresholds
-    if (global.currentValue[ch] <= global.channelData[ch][lowAlarm]) alarmCondition = true;
-    else if (global.currentValue[ch] >= global.channelData[ch][highAlarm]) alarmCondition = true;
-    else if (global.currentValue[ch] <= global.channelData[ch][lowWarn]) warningCondition = true;
-    else if (global.currentValue[ch] >= global.channelData[ch][highWarn]) warningCondition = true;
+    bool alarmCondition = (global.currentValue[ch] <= global.channelData[ch][lowAlarm]
+                        || global.currentValue[ch] >= global.channelData[ch][highAlarm]);
+    bool warningCondition = (global.currentValue[ch] <= global.channelData[ch][lowWarn]
+                        || global.currentValue[ch] >= global.channelData[ch][highWarn]);
+    
 
     // Step 3 — Trip delay logic: alarm triggers only after sustained violation
-    if (alarmCondition && !global.alarmLatched[ch]) 
-    {
+    if (!alarmCondition) {
+        global.violationStart[ch] = 0;  // reset timer if safe again
+    } else if (!global.alarmLatched[ch]) {
         if (global.violationStart[ch] == 0) 
         {
             global.violationStart[ch] = now;
@@ -153,10 +139,6 @@ void updateChannel(int ch, uint32_t now)
             global.alarmLatched[ch] = true;
             Serial.printf("🚨 ALARM: %s = %.2f %s\n", global.names[ch], global.currentValue[ch], global.units[ch]);
         }
-    } 
-    else if (!alarmCondition) 
-    {
-        global.violationStart[ch] = 0;  // reset timer if safe again
     }
 
     // Step 4 — Print warnings (non-latching)
@@ -166,7 +148,7 @@ void updateChannel(int ch, uint32_t now)
     }
 
     // Step 5 — Auto-clear logic: if value back in safe zone for > 2 s
-    if (global.alarmLatched[ch] && inRange(global.channelData[ch][clearLow]) && global.currentValue[ch] <= global.channelData[ch][clearHigh]
+    if (global.alarmLatched[ch] && global.currentValue[ch] <= global.channelData[ch][clearHigh]
        && global.currentValue[ch] >= global.channelData[ch][clearLow]) 
     {
         static uint32_t safeStart[8] = {0};
