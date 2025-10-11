@@ -37,8 +37,6 @@
 
 // ========================= CHANNEL INITIALIZATION =========================
 //
-// NEEDS TO BE PHASED OUT
-//
 
 // New stuff (keep):
 
