@@ -29,12 +29,6 @@
 #define MOTOR_PIN       5
 #define ACTUATOR_PIN    19
 
-// ========================= STRUCT DEFINITION =========================
-//
-// Each Channel stores threshold and timing info for one sensor.
-// Runtime values (alarm states, timers, etc.) are tracked separately.
-//
-
 // ========================= CHANNEL INITIALIZATION =========================
 //
 
@@ -76,6 +70,7 @@ enum field
 
 // Global data
 struct Global {
+    // Lookup table by channel and field for numeric channel data.
     const double channelData[numChannels][numFields] = {
         {3.5, 3.0, 5.0, 6.0, motorOff, 200, 4.8, 5.8},
         {25.0, 15.0, 45.0, 50.0, motorOff, 500, 17.0, 48.0},
@@ -87,13 +82,16 @@ struct Global {
         {3.0, 2.0, 7.0, 8.0, actuatorOff, 500, 2.5, 7.5}
     };
 
+    // Lookup table for channel name by channel.
     const char* names[8] = {"Motor Current", "Motor Speed", 
                             "Reaction Force", "Reaction Torque", 
                             "Actuator Current", "Thrust Force", 
                             "Linear Displacement", "Linear Speed"};
 
+    // Lookup table for units by channel.
     const char* units[8] = {"A", "RPM", "N", "Nm", "A", "N", "m", "mm/s"};
 
+    // True global variables.
     bool alarmLatched[numChannels] = {false};
     uint32_t violationStart[numChannels] = {0};
     float currentValue[numChannels] = {0.0};
