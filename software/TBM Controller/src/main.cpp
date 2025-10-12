@@ -40,6 +40,13 @@ enum action
     actuatorOff
 };
 
+enum state
+{
+    clear,
+    warning,
+    alarm
+};
+
 enum channel 
 {
     motorCurrent,
@@ -114,6 +121,7 @@ void updateChannel(int ch, uint32_t now)
 {
     // Step 1 — Simulate a random live reading (replace with real sensor later)
     global.currentValue[ch] = random(100, 800) / 100.0;  // 1.00 – 8.00
+    state currentState;
 
     // Step 2 — Evaluate thresholds
     bool alarmCondition = (global.currentValue[ch] <= global.channelData[ch][lowAlarm]
