@@ -78,6 +78,7 @@ enum field
 // Global data
 struct Global {
     // Lookup table by channel and field for numeric channel data.
+    // {lowWarn, lowAlarm, highWarn, highAlarm, interlockAction, tripDelay(ms), lowClear, highClear}
     const double channelData[numChannels][numFields] = {
         {3.5, 3.0, 5.0, 6.0, motorOff, 200, 4.8, 5.8},
         {25.0, 15.0, 45.0, 50.0, motorOff, 500, 17.0, 48.0},
