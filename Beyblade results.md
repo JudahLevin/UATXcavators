@@ -41,7 +41,7 @@ From our experiment, $EA$ = 1.42 N, SD ≈ 0.12 N
 
 # 2. Determining the relationship between rubber band force and cutter head turn count
 
-We measured wetted dirt at .558lb/cup, which is 10.5kPa. Then, we measured out an unstretched (nearly taut) rubber band from the cutter head center to the edge on both sides, then wrapped the rubber band around a central spindle on the cutter head, and released as the cutter head span due to the rubber band contraction. Finally, we recorded the number of revolutions of the cutter head.
+We measured wetted dirt at .558lb/cup, which is 1070kg/m^3. Then, we measured out an unstretched (nearly taut) rubber band from the cutter head center to the edge on both sides, then wrapped the rubber band around a central spindle on the cutter head, and released as the cutter head span due to the rubber band contraction. Finally, we recorded the number of revolutions of the cutter head.
 
 We did this for 1 - 4 wraps, with a band distance of 15cm and then 32cm on each side.
 
@@ -112,4 +112,4 @@ Returning to this *threshold force*, we can estimate it as the midpoint between 
 
 So, $\tau = .008 \pm .003\text{Nm}$
 
-Now, we can do the same experiment for another cutter head type and compare the breakaway torque to determine cutter head efficiency.
+Now, we can do the same experiment for another cutter head type and compare the breakaway torque to determine the cutter head efficiency.
