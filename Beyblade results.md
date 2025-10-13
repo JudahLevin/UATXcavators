@@ -8,3 +8,5 @@
 | 3 | 15 |
 
 In this experiment, we lifted a fixed weight of 5.2N (a 500mL plastic bottle), pinching a rubber band at the unstretched length, and then recording the stretched length at which the rubber band could lift the fixed weight (when the bottle overcame gravity).
+
+Knowing that 
