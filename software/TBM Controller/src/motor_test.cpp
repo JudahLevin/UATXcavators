@@ -18,25 +18,29 @@
 #define DIR_PIN 4   // Orange wire → DIR+
 #define ENA_PIN 5   // Red wire → ENA+
 
+void pulse(int wavelengthMicroseconds) {
+    // 🌀 Generate pulses to rotate motor
+    digitalWrite(PUL_PIN, HIGH);
+    delayMicroseconds(wavelengthMicroseconds / 2);  // Adjust for speed
+    digitalWrite(PUL_PIN, LOW);
+    delayMicroseconds(wavelengthMicroseconds / 2);
+}
+
 void setup() {
-  Serial.begin(115200);
-  pinMode(PUL_PIN, OUTPUT);
-  pinMode(DIR_PIN, OUTPUT);
-  pinMode(ENA_PIN, OUTPUT);
+    Serial.begin(115200);
+    pinMode(PUL_PIN, OUTPUT);
+    pinMode(DIR_PIN, OUTPUT);
+    pinMode(ENA_PIN, OUTPUT);
 
-  // 🟢 Enable the driver (LOW = ON for most DM556T units)
-  digitalWrite(ENA_PIN, LOW);
+    // 🟢 Enable the driver (LOW = ON for most DM556T units)
+    digitalWrite(ENA_PIN, LOW);
 
-  // 🟢 Set initial direction
-  digitalWrite(DIR_PIN, HIGH);
+    // 🟢 Set initial direction
+    digitalWrite(DIR_PIN, HIGH);
 
-  Serial.println("Stepper test starting...");
+    Serial.println("Stepper test starting...");
 }
 
 void loop() {
-  // 🌀 Generate pulses to rotate motor
-  digitalWrite(PUL_PIN, HIGH);
-  delayMicroseconds(500);  // Adjust for speed
-  digitalWrite(PUL_PIN, LOW);
-  delayMicroseconds(500);
+    pulse(1000);
 }
