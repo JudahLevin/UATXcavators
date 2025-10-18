@@ -27,7 +27,7 @@ const int DIR_PIN = 19;
 const int ENA_PIN = 21;  // ENA− connected here, ENA+ tied to +5V
 
 // Motor & microstep specs
-const int stepsPerRev = 100;  // 1.8° × 1/8 microstep
+const int stepsPerRev = 1600;  // 1.8° × 1/8 microstep
 
 // Timing constants (µs)
 const unsigned int ENA_SETUP_US = 5;     // ENA must settle before DIR in single-pulse mode
