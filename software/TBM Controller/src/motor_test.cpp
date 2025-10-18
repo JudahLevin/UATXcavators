@@ -14,33 +14,66 @@
 // PURPLE: IO2 (25) -> PUL+
 // ======================================================================
 
-#define PUL_PIN 2   // Purple wire → PUL+
-#define DIR_PIN 4   // Orange wire → DIR+
-#define ENA_PIN 5   // Red wire → ENA+
-
-void pulse(int wavelengthMicroseconds) {
+void pulse() {
     // 🌀 Generate pulses to rotate motor
     digitalWrite(PUL_PIN, HIGH);
-    delayMicroseconds(wavelengthMicroseconds / 2);  // Adjust for speed
+    delayMicroseconds(PULSE_HIGH_US);  // Adjust for speed
     digitalWrite(PUL_PIN, LOW);
-    delayMicroseconds(wavelengthMicroseconds / 2);
+    delayMicroseconds(PULSE_LOW_US);
 }
+// Pin assignments
+const int PUL_PIN = 18;
+const int DIR_PIN = 19;
+const int ENA_PIN = 21;  // ENA− connected here, ENA+ tied to +5V
+
+// Motor & microstep specs
+const int stepsPerRev = 100;  // 1.8° × 1/8 microstep
+
+// Timing constants (µs)
+const unsigned int ENA_SETUP_US = 5;     // ENA must settle before DIR in single-pulse mode
+const unsigned int DIR_SETUP_US = 5;     // DIR must settle before PUL rising edge
+const unsigned int PULSE_HIGH_US = 500;   // keep PUL high for ≥ 2.5 µs
+const unsigned int PULSE_LOW_US = 500;    // low time between pulses
 
 void setup() {
     Serial.begin(115200);
+    delay(1000);
+    Serial.println("Motor test with ENA control");
+
     pinMode(PUL_PIN, OUTPUT);
     pinMode(DIR_PIN, OUTPUT);
     pinMode(ENA_PIN, OUTPUT);
 
-    // 🟢 Enable the driver (LOW = ON for most DM556T units)
+    // Idle states
+    digitalWrite(PUL_PIN, LOW);
+    digitalWrite(DIR_PIN, LOW);
+    // Set ENA to enabled (low)
     digitalWrite(ENA_PIN, LOW);
-
-    // 🟢 Set initial direction
-    digitalWrite(DIR_PIN, HIGH);
-
-    Serial.println("Stepper test starting...");
 }
 
 void loop() {
-    pulse(1000);
+    // Ensure driver is enabled
+    digitalWrite(ENA_PIN, LOW);
+    delayMicroseconds(ENA_SETUP_US);
+
+    // Spin one revolution forward
+    Serial.println("Forward");
+    digitalWrite(DIR_PIN, HIGH);
+    delayMicroseconds(DIR_SETUP_US);
+
+    for (int i = 0; i < stepsPerRev; i++) {
+        pulse();
+    }
+    delay(2000);
+
+    // Spin one revolution backward
+    Serial.println("Reverse");
+    // ENA is already low (enabled)
+    digitalWrite(DIR_PIN, LOW);
+    delayMicroseconds(DIR_SETUP_US);
+
+    for (int i = 0; i < stepsPerRev; i++) {
+        pulse();
+    }
+    delay(1000);
 }
