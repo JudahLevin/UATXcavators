@@ -42,9 +42,9 @@ enum action
 
 enum state
 {
-    clear,
-    warning,
-    alarm
+    clearState,
+    warningState,
+    alarmState
 };
 
 enum channel 
@@ -236,6 +236,7 @@ void manualReset()
 //
 // Runs once at startup.
 //
+/*
 void setup() 
 {
   Serial.begin(115200);
@@ -283,3 +284,5 @@ void loop()
     Serial.println("------------------------------------------");
     delay(1000);  // one-second update interval
 }
+
+*/

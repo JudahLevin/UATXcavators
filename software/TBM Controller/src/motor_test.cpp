@@ -18,7 +18,11 @@
 #define DIR_PIN 4   // Orange wire → DIR+
 #define ENA_PIN 5   // Red wire → ENA+
 
-void pulse(int wavelengthMicroseconds) {
+void print_rad_to_deg(float radians) {
+    Serial.printf("%.2f deg", radians * RAD_TO_DEG);
+}
+
+void motorPulse(int wavelengthMicroseconds) {
     // 🌀 Generate pulses to rotate motor
     digitalWrite(PUL_PIN, HIGH);
     delayMicroseconds(wavelengthMicroseconds / 2);  // Adjust for speed
@@ -39,8 +43,13 @@ void setup() {
     digitalWrite(DIR_PIN, HIGH);
 
     Serial.println("Stepper test starting...");
+
+    print_rad_to_deg(PI);
 }
 
 void loop() {
-    pulse(1000);
+    uint64_t ticksTurned;
+    
+
+
 }
