@@ -36,6 +36,8 @@ int getSubtaskLength() {
     return (maxSubtaskLen >= remainingTaskLength) ? maxSubtaskLen : remainingTaskLength;
 }
 
+
+
 void setup() {
     Serial.begin(115200);
     delay(1000);
@@ -53,6 +55,14 @@ void setup() {
 }
 
 void loop() {
+    // Whenever a character is typed, runs loop body
+    while (!Serial.available())
+        delay(100);
+    Serial.read();
+    // String keyword = Serial.readStringUntil('\n');
+
+
+
     // Ensure driver is enabled
     digitalWrite(ENA_PIN, LOW);
     delayMicroseconds(ENA_SETUP_US);
