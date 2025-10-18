@@ -20,7 +20,7 @@ const int DIR_PIN = 19;
 const int ENA_PIN = 21;  // ENA− connected here, ENA+ tied to +5V
 
 // Motor & microstep specs
-const int stepsPerRev = 1600;  // 1.8° × 1/8 microstep
+const int stepsPerRev = 1600;  // 200 full steps/rev * 8 microsteps/step
 
 // Timing constants (µs)
 const unsigned int ENA_SETUP_US = 5;     // ENA must settle before DIR in single-pulse mode
@@ -29,7 +29,8 @@ const unsigned int PULSE_HIGH_US = 500;   // keep PUL high for ≥ 2.5 µs
 const unsigned int PULSE_LOW_US = 500;    // low time between pulses
 
 // Current rotator task.
-int taskLength = 0;
+int fullTaskLength = 0;
+int remainingTaskLength = 0;
 unsigned int taskTime = 0;
 
 // Length of loop.
@@ -43,8 +44,10 @@ void pulse(int highDur, int lowDur) {
     delayMicroseconds(lowDur);
 }
 
-int subtaskLength() {
-
+int getSubtaskLength() {
+    if ( (taskTime == 0) || (remainingTaskLength == 0) ) return 0;
+    int maxSubtaskLen = ceil(fullTaskLength * LOOP_LEN / taskTime); 
+    return (maxSubtaskLen >= remainingTaskLength) ? maxSubtaskLen : remainingTaskLength;
 }
 
 void setup() {
