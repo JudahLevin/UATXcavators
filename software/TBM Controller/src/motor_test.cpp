@@ -82,7 +82,7 @@ void loop() {
                 break;
             case '+':
             case '=':
-                if (PULSE_LEN_US > 25)
+                if (PULSE_LEN_US > 62)
                     PULSE_LEN_US /= 2;
                 break;
         }
