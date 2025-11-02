@@ -85,6 +85,9 @@ void loop() {
                 if (PULSE_LEN_US > 62)
                     PULSE_LEN_US /= 2;
                 break;
+            case 'g':
+                Serial.printf("on: %d\n reversed: %d\n pulse length: %d us\n\n", isOn, isReversed, PULSE_LEN_US);
+                break;
         }
     }
 
