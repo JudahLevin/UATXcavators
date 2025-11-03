@@ -13,7 +13,7 @@
 
 # Observations
 * Initial DC voltage link low errors on the linear actuator wizard. Simultaneous circuit-breaking on the 120VAC generator ports when two slots were used for the actuator's main power + controls. This was even after a new receptacle on the problematic one. This was solved by using 240VAC to power the actuator, which was in a different receptacle with more current. We suspect the current rating on the 120VAC outlet was insufficient to handle both actuator loads.
-* Backflow?? TBD
+* There was backflow when continuously running the peristaltic dosing pump (soap) and the diaphragm pump (water supply). But, loading up the line with the peristaltic first, and then consecutively running the diaphragm pump did solve the backflow. 
 * When jogging the linear actuator, in case of a motor stall, if reversing direction worked, it only worked the first time (i.e., when the motor operator hit 'R' on the keyboard once). But if >1 reversal happened and the motor was still stalled, reversing repeatedly afterwards did nothing. In that case, jogging the linear actuator to retract slightly allowed the cutter head to start spinning again. Then, we jogged back down to continue digging.
 * Motor stalls occurred temporarily (1-2 seconds) if a rock was in the way or the cutter head caught on something. Stalls that necessitated motor reversals/jogs to break free happened when the cutter head wasn't allowed to cut the same spot for long enough ("idle time"). Stalling happened <10 seconds of cutter head idle time. Using the jog speed above, this implies that the TBM could sustain a max speed of .0125in/sec (a 1-second jog every 10 seconds) or 19mm/min.
 * The vacuum successfully picked up the muck, even at a distance of about 1” from the muck level. The largest particle it picked up was .68in (from inside the disposal bucket). It clogged 2-3 times, and during clogs, flushing the tube with water and ensuring the intake was not immersed in water was sufficient to continue suction. Inside the disposal bucket, there was an 8-inch high material, three layers of material formed (@ 10in diameter, that is about 2.75gal). ~½ of the height was warm form, then the bottom part was noticeably cooler silt, with the density increasing as we went down. We confirmed this separation was due to settling. The inner diameter of the PVC tube is .75in, which means it fits a .68in particle. Because there was no curve in this smaller tube, by the time there was a curve, it was already in the larger 1.25-inch-diameter vacuum tube and had space to move.
@@ -24,6 +24,7 @@
 
 # For the future
 * Add sensors for current, RPM, and vibration, to automate and get feedback from the motor to respond with movements with the actuator when it stalls.
+* Use a dye to detect backflow and valve to mitigate it.
 * Add methods to control the pump flow/current.
 * Alligator clips to safely connect wires to the battery.
 * Switches to turn on and off the two pumps rather than repeatedly touching the wire.
