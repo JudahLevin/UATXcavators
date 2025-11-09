@@ -1,11 +1,13 @@
 #include <Arduino.h>
 #include "motorControl.cpp"
+#include "pins.cpp"
 
 // Motor & microstep specs
 const int stepsPerRev = 1600;  // 200 full steps/rev * 8 microsteps/step
 
 bool isOn = false;
 bool isReversed = false;
+double torque = 0.0;
 
 // Unneeded for now
 /*
@@ -29,6 +31,7 @@ inline void safeWritePin(int pin, int state) {
 
 void setup() {
     Serial.begin(115200);
+    analogReadResolution(12);
     delay(1000);
     Serial.println("Motor test with ENA control");
 
@@ -41,10 +44,12 @@ void setup() {
     digitalWrite(DIR_PIN, LOW);
     digitalWrite(ENA_PIN, HIGH);
 
-
+    calibrateADC(); 
 }
 
 void loop() {
+    torque = readMotorTorque();
+
     // Whenever a character is typed, runs loop body
     if (Serial.available()) {
         String keyword = Serial.readString();
@@ -71,7 +76,8 @@ void loop() {
                 Serial.printf("on: %d\n reversed: %d\n pulse length: %d us\n\n", isOn, isReversed, PULSE_LEN_US);
                 break;
             case 't':
-                analogRead(CURR_PIN);
+                Serial.printf("torque: %.2f", torque);
+                break;
         }
     }
 
