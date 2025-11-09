@@ -1,39 +1,20 @@
 #include <Arduino.h>
-
-// Pin assignments
-const int PUL_PIN = 18;
-const int DIR_PIN = 19;
-const int ENA_PIN = 21;  // ENA− connected here, ENA+ tied to +5V
+#include "motorControl.cpp"
 
 // Motor & microstep specs
 const int stepsPerRev = 1600;  // 200 full steps/rev * 8 microsteps/step
 
-// Timing constants (µs)
-const unsigned int SETUP_US = 100;     // DIR must settle before PUL rising edge
-unsigned int PULSE_LEN_US = 250;   // keep PUL high for ≥ 2.5 µs
-
-// Length of loop.
-unsigned int LOOP_LEN = 3000; // Loop iterates every 3000 microseconds
-
 bool isOn = false;
 bool isReversed = false;
 
+// Unneeded for now
+/*
 // Current rotator task.
 int fullTaskLength = 0;
 int remainingTaskLength = 0;
 unsigned int taskTimeUS = 0;
 
-void pulse(int length) {
-    length /= 2;
-    // Generate pulses to rotate motor
-    digitalWrite(PUL_PIN, HIGH);
-    delayMicroseconds(length);  // Adjust for speed
-    digitalWrite(PUL_PIN, LOW);
-    delayMicroseconds(length);
-}
 
-// Unneeded for now
-/* 
 int getSubtaskLength() {
     if ( remainingTaskLength == 0 ) return 0;
     int maxSubtaskLen = ceil(fullTaskLength * LOOP_LEN / taskTimeUS); 
@@ -41,7 +22,7 @@ int getSubtaskLength() {
 }
 */
 
-void safeWritePin(int pin, int state) {
+inline void safeWritePin(int pin, int state) {
     digitalWrite(pin, state);
     delayMicroseconds(SETUP_US);
 }
@@ -58,8 +39,9 @@ void setup() {
     // Idle states
     digitalWrite(PUL_PIN, LOW);
     digitalWrite(DIR_PIN, LOW);
-    // Set ENA to disabled (high)
     digitalWrite(ENA_PIN, HIGH);
+
+
 }
 
 void loop() {
@@ -88,6 +70,8 @@ void loop() {
             case 'p':
                 Serial.printf("on: %d\n reversed: %d\n pulse length: %d us\n\n", isOn, isReversed, PULSE_LEN_US);
                 break;
+            case 't':
+                analogRead(CURR_PIN);
         }
     }
 
