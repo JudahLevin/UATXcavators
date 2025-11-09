@@ -1,9 +1,7 @@
 #include <Arduino.h>
 #include "motorControl.cpp"
 #include "pins.cpp"
-
-// Motor & microstep specs
-const int stepsPerRev = 1600;  // 200 full steps/rev * 8 microsteps/step
+#include "calibration.cpp"
 
 bool isOn = false;
 bool isReversed = false;
@@ -24,11 +22,6 @@ int getSubtaskLength() {
 }
 */
 
-inline void safeWritePin(int pin, int state) {
-    digitalWrite(pin, state);
-    delayMicroseconds(SETUP_US);
-}
-
 void setup() {
     Serial.begin(115200);
     analogReadResolution(12);
@@ -43,8 +36,6 @@ void setup() {
     digitalWrite(PUL_PIN, LOW);
     digitalWrite(DIR_PIN, LOW);
     digitalWrite(ENA_PIN, HIGH);
-
-    calibrateADC(); 
 }
 
 void loop() {
@@ -54,29 +45,38 @@ void loop() {
     if (Serial.available()) {
         String keyword = Serial.readString();
         switch (tolower(keyword.charAt(0))) {
+            case 'c':
+                calibrateAll();
+                break;
             case 's':
+                calibrateIfNeeded();
                 isOn = !isOn;
                 safeWritePin(ENA_PIN, isOn);
                 break;
             case 'r':
+                calibrateIfNeeded();
                 isReversed = !isReversed;
                 safeWritePin(DIR_PIN, isReversed);
                 break;
             case '-':
             case '_':
+                calibrateIfNeeded();
                 if (PULSE_LEN_US < 1000000)
                     PULSE_LEN_US *= 2;
                 break;
             case '+':
             case '=':
+                calibrateIfNeeded();
                 if (PULSE_LEN_US > 62)
                     PULSE_LEN_US /= 2;
                 break;
             case 'p':
+                calibrateIfNeeded();
                 Serial.printf("on: %d\n reversed: %d\n pulse length: %d us\n\n", isOn, isReversed, PULSE_LEN_US);
                 break;
             case 't':
-                Serial.printf("torque: %.2f", torque);
+                calibrateIfNeeded();
+                Serial.printf("torque: %.2f N*m\n\n", torque);
                 break;
         }
     }

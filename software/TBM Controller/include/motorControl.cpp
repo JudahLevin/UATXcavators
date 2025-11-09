@@ -1,6 +1,9 @@
 #ifndef MOTORCONTROL_CPP
 #define MOTORCONTROL_CPP
 
+// Motor & microstep specs
+const int stepsPerRev = 1600;  // 200 full steps/rev * 8 microsteps/step
+
 #include "Arduino.h"
 #include <cmath>
 #include "pins.cpp"
@@ -15,28 +18,18 @@ inline void pulse(int length) {
     digitalWrite(PUL_PIN, HIGH);
     delayMicroseconds(highLen);  // Adjust for speed
     digitalWrite(PUL_PIN, LOW);
-    delayMicroseconds(highLen - length);
+    delayMicroseconds(length - highLen);
 }
 
 const float ALPHA = 0.1;
 int V_off = -1;
-const int NUM_ADC_READINGS = 100;
+const int NUM_ADC_READINGS = 200;
 double filtCurrent = 0;
 
 const double ADC_MAX = 4095.0;
 const double ADC_SCALE = 3.3;
 const double SENSITIVITY = 0.04;
 const double TORQUE_CONST = 0.714;
-
-
-void calibrateADC() {
-    int sum = 0;
-    for (int i = 0; i < NUM_ADC_READINGS; i++) {
-        sum += analogRead(CURR_PIN);
-        delay(5);
-    }
-    V_off = (sum / NUM_ADC_READINGS) / ADC_MAX * ADC_SCALE;
-}
 
 inline double readMotorVolts() {
     return analogRead(CURR_PIN) / ADC_MAX * ADC_SCALE;

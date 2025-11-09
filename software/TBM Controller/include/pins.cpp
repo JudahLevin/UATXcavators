@@ -7,4 +7,9 @@ const int DIR_PIN = 19;
 const int ENA_PIN = 21;  // ENA− connected here, ENA+ tied to +5V
 const int CURR_PIN = 34;
 
+inline void safeWritePin(int pin, int state) {
+    digitalWrite(pin, state);
+    delayMicroseconds(SETUP_US);
+}
+
 #endif
