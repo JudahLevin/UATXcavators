@@ -9,7 +9,6 @@ const int stepsPerRev = 1600;  // 200 full steps/rev * 8 microsteps/step
 #include "pins.cpp"
 
 // Timing constants (µs)
-const unsigned int SETUP_US = 100;     // DIR must settle before PUL rising edge
 unsigned int PULSE_LEN_US = 250;   // keep PUL high for ≥ 2.5 µs
 
 inline void pulse(int length) {

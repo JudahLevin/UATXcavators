@@ -1,6 +1,8 @@
 #ifndef PINS_CPP
 #define PINS_CPP
 
+const unsigned int SETUP_US = 100;     // DIR must settle before PUL rising edge
+
 // Pin assignments
 const int PUL_PIN = 18;
 const int DIR_PIN = 19;
