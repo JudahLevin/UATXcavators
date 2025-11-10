@@ -26,6 +26,8 @@ inline void calibrateIfNeeded() {
 
 void calibrateAll() {
     calibrateADC();
+
+    calibrated = true;
     Serial.printf("Ready\n\n");
 }
 
