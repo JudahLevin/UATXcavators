@@ -446,3 +446,4 @@
 {"ts":"2025-11-27T15:22:41.512Z","sheet":"Cost Breakdown II","a1":"E87","row":87,"col":5,"old":"TBD","new":"100","user":"judahlevin888@gmail.com"}
 {"ts":"2025-11-27T15:22:42.825Z","sheet":"Cost Breakdown II","a1":"E87","row":87,"col":5,"old":"100.0","new":"500","user":"judahlevin888@gmail.com"}
 {"ts":"2025-11-27T15:23:02.519Z","sheet":"Cost Breakdown II","a1":"E82","row":82,"col":5,"old":"2.0","new":"4","user":"judahlevin888@gmail.com"}
+{"ts":"2025-11-27T15:23:06.989Z","sheet":"Cost Breakdown II","a1":"G82","row":82,"col":7,"old":"0.0","new":"=4*8","user":"judahlevin888@gmail.com"}
