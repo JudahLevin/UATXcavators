@@ -277,3 +277,122 @@ $$
 $$
 
 for the chosen material and safety factor.
+
+
+Here is a **GitHub-ready Markdown** section formatted cleanly for your paper, with proper `$` / `$$` MathJax.
+
+---
+
+## 5. Numerical Example: Stiffened-Strip Bending Stress Calculation
+
+This section applies the composite stiffened-strip model to a representative geometry. A plate strip of width $b$ is reinforced by a vertical stiffener of height $h$ and thickness $t_s$, forming a T-shaped composite section. The strip behaves as a cantilever of span $L$ carrying a tip load $F$.
+
+### **Input Geometry and Loading**
+
+* Plate thickness: $t = 0.009525\ \text{m}$
+* Plate strip width: $b = 0.05\ \text{m}$
+* Stiffener height: $h = 0.075\ \text{m}$
+* Stiffener thickness: $t_s = 0.025\ \text{m}$
+* Tip load: $F = 8896.4\ \text{N}$
+* Cantilever span: $L = 0.25\ \text{m}$
+
+The coordinate system uses:
+
+* $Y$: vertical direction (plate + stiffener height)
+* $Z$: cantilever length
+* $X$: plate/stiffener thickness direction
+
+---
+
+### **5.1. Cross-Sectional Properties**
+
+Plate area:
+$$A_p = bt = 4.7625\times 10^{-4}\ \text{m}^2$$
+
+Stiffener area:
+$$A_s = t_s h = 1.875\times 10^{-3}\ \text{m}^2$$
+
+Plate centroid:
+$$Y_p = h + \frac{t}{2} = 0.0797625\ \text{m}$$
+
+Stiffener centroid:
+$$Y_s = \frac{h}{2} = 0.0375\ \text{m}$$
+
+Composite neutral axis (from bottom of stiffener):
+$$
+\bar{Y}
+= \frac{A_p Y_p + A_s Y_s}{A_p + A_s}
+\approx 0.0461\ \text{m}
+$$
+
+---
+
+### **5.2. Second Moment of Area**
+
+Plate about its own centroid:
+$$I_{p0} = \frac{b t^3}{12} = 3.60\times 10^{-9}\ \text{m}^4$$
+
+Shifted to global NA:
+$$I_p = I_{p0} + A_p (Y_p - \bar{Y})^2
+\approx 5.45\times 10^{-7}\ \text{m}^4$$
+
+Stiffener about its own centroid:
+$$I_{s0} = \frac{t_s h^3}{12} = 8.79\times 10^{-7}\ \text{m}^4$$
+
+Shifted to global NA:
+$$I_s = I_{s0} + A_s (\bar{Y} - Y_s)^2
+\approx 1.02\times 10^{-6}\ \text{m}^4$$
+
+Total composite inertia:
+$$I = I_p + I_s \approx 1.56\times 10^{-6}\ \text{m}^4$$
+
+---
+
+### **5.3. Extreme-Fiber Distances**
+
+Top of plate at $Y = h + t = 0.084525\ \text{m}$:
+$$c_{\text{top}} = (h+t) - \bar{Y} \approx 0.0385\ \text{m}$$
+
+Bottom of stiffener at $Y = 0$:
+$$c_{\text{bot}} = \bar{Y} \approx 0.0461\ \text{m}$$
+
+Maximum distance:
+$$c_{\max} = c_{\text{bot}}$$
+
+---
+
+### **5.4. Bending Moment and Stress**
+
+Maximum bending moment at the fixed end:
+$$M_{\max} = FL = 2224.1\ \text{N·m}$$
+
+Top fiber stress:
+$$\sigma_{\text{top}} = \frac{M_{\max} c_{\text{top}}}{I}
+\approx 5.48 \times 10^{7}\ \text{Pa}
+= 54.8\ \text{MPa}$$
+
+Bottom fiber stress:
+$$\sigma_{\text{bot}} = \frac{M_{\max} c_{\text{bot}}}{I}
+\approx 6.56 \times 10^{7}\ \text{Pa}
+= 65.6\ \text{MPa}$$
+
+Maximum bending stress:
+$$\boxed{\sigma_{\max} \approx 65.6\ \text{MPa}}$$
+
+---
+
+### **5.5. Interpretation**
+
+Even with a relatively thin plate ($t=9.5\ \text{mm}$), the stiffener of height $h=75\ \text{mm}$ and thickness $t_s=25\ \text{mm}$ dramatically increases the bending rigidity. Under the applied load of $F=8896.4\ \text{N}$ at a span of $L=0.25\ \text{m}$, the resulting bending stress is:
+
+* **≈ 65 MPa**, giving
+* **SF ≈ 3.8 against 250 MPa steel**, or
+* **SF ≈ 5.3 against 350 MPa steel**
+
+This confirms the stiffened-strip approach provides a structurally sound load path for the ring plate under column loads.
+
+---
+
+If you want, I can also generate a formatted version for Sections 1–4 or produce a figure-ready diagram of the composite section.
+
+
