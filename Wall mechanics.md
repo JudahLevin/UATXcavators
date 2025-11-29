@@ -153,15 +153,15 @@ Solve for minimum stiffness product:
 
 Let:
 
-- $$b = 50\ \text{mm} = 0.05\ \text{m}$$  
-- $$t = 30\ \text{mm} = 0.03\ \text{m}$$
+- $$b = 38.1\ \text{mm} = 0.0381\ \text{m} \ \text{(1.5 in)}$$  
+- $$t = 38.1\ \text{mm} = 0.0381\ \text{m} \ \text{(1.5 in)}$$
 
 Then:
 
-- $$t b^3 = 0.03 \cdot (0.05)^3 = 3.75\times 10^{-6} \gg 5.6\times 10^{-8}$$
+- $$t b^3 = 0.0381^4 = 2.11\times 10^{-6} \gg 5.6\times 10^{-8}$$
 - Cross-section area:  
-  $$b t = 0.0015\ \text{m}^2 \gg 0.000427\ \text{m}^2$$
+  $$b t = .00145\ \text{m}^2 \gg 0.000427\ \text{m}^2$$
 
 **Conclusion:**  
-A 30 mm × 50 mm rib vastly exceeds both bending-compression and Euler-buckling requirements, even under 4× safety factor.
+A 38.1 mm × 38.1 mm (1.5 in × 1.5 in) rib vastly exceeds both bending-compression and Euler-buckling requirements, even under 4× safety factor.
 
