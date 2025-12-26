@@ -14,18 +14,20 @@ The problem: we need to build a functional tunnel boring machine by the end of M
 * **Fabricate** our in-house steel parts
 
 ## Order of operations Dec 21 - Jan 5
-1. JUDAH - MECHANICAL: Source and buy the motor/gearbox and screw jack because of lead time
-    1. Complete and justify TBM diameter + cutterhead design for torque/RPM and thrust/stroke length computation
-    2. Refine the technical spec mathematical results with literature
+1. JUDAH - MECHANICAL: Source and buy the motor/gearbox and screw jack because of lead time 
+    1. ✅ Complete and justify TBM diameter + cutterhead design for torque/RPM and thrust/stroke length computation
+    2. ✅ Refine the technical spec mathematical results with literature
     3. Justify torque/RPM and thrust specs of each w/ Cole (for solidifying the design and avoiding expensive mistakes)
     4. Select a compatible VFD for the cutterhead motor
     5. Motor/gearbox note: search motor by horsepower, gearbox by output torque and reduction, both by NEMA/IEC size
     6. Find multiple product options for each online, diversify across different Austin distributors (for lead time and purchase failure margin of safety)
     7. Call the distributors and pay for fastest delivery (time is more important than money)
-2. EITAN/SAM - ELECTRICAL: Design and purchase the electrical system/parts 
-    1. Make a readable and clear diagram that interconnects all our power sources, actuators, sensors, and controls. We want to visualize the setup so we can detect missing parts. 
+*12-16 update: we are pivoting to simply buy from either NORD or our original SEW friends (whoever responds faster)*
+2. EITAN - ELECTRICAL: Design and purchase the electrical system/parts 
+    1. ✅ Make a readable and clear diagram that interconnects all our power sources, actuators, sensors, and controls. We want to visualize the setup so we can detect missing parts. 
     2. Present the diagram to Cole and work with him to finalize it. 
     3. Once diagram is finalized, write up a complete BOM of cables, electronics, power equipment, sensors, and controls parts we need. Optimize for delivery speed.
+    4. *12-16 update: make a state diagram of the entire machine operation with variable names and unit values for our programming/comms person*
     5. Purchase everything electrical on the BOM.
     6. Determine LOTO and safety equipment required and add to the BOM.
     7. Purchase everything for safety on the BOM.
@@ -38,7 +40,6 @@ The problem: we need to build a functional tunnel boring machine by the end of M
     6. Purchase the BOM.
     8. Source equipment, location options required for assembly, as well as possible storage and transportation methods (e.g. call local towing companies).
     9. Write up fabrication, assembly, and logistic plans and timelines for execution during school time.
-    10. 
 
 
 
