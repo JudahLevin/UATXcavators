@@ -568,3 +568,4 @@
 {"ts":"2026-01-01T20:14:04.879Z","sheet":"Cost Breakdown II","a1":"F33","row":33,"col":6,"old":"AXL F DO16/1 1H","new":"AXL F DO16/1 1H, D","user":null}
 {"ts":"2026-01-01T20:14:08.302Z","sheet":"Cost Breakdown II","a1":"F32","row":32,"col":6,"old":"AXL F DI16/1 1H, Digital Output module for power","new":"AXL F DI16/1 1H, Digital Input module for power","user":null}
 {"ts":"2026-01-01T20:14:16.971Z","sheet":"Cost Breakdown II","a1":"F33","row":33,"col":6,"old":"AXL F DO16/1 1H, D","new":"AXL F DO16/1 1H, Digital Output module for power","user":null}
+{"ts":"2026-01-01T20:14:24.799Z","sheet":"Cost Breakdown II","a1":"F32","row":32,"col":6,"old":"AXL F DI16/1 1H, Digital Input module for power","new":"AXL F DI16/1 1H, Digital Input module for controls and sensors (Sam)","user":null}
