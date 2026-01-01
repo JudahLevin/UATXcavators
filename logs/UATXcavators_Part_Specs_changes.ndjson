@@ -565,3 +565,4 @@
 {"ts":"2026-01-01T20:13:37.015Z","sheet":"Cost Breakdown II","a1":"A1","row":1,"col":1,"old":"Alternative sources can be found here:","new":"su","user":null}
 {"ts":"2026-01-01T20:13:54.665Z","sheet":"Cost Breakdown II","a1":"F30","row":30,"col":6,"old":"QUINT-PS/1AC/24DC/10","new":"QUINT-PS/1AC/24DC/10, PSU for controls","user":null}
 {"ts":"2026-01-01T20:14:02.860Z","sheet":"Cost Breakdown II","a1":"F32","row":32,"col":6,"old":"AXL F DI16/1 1H","new":"AXL F DI16/1 1H, Digital Output module for power","user":null}
+{"ts":"2026-01-01T20:14:04.879Z","sheet":"Cost Breakdown II","a1":"F33","row":33,"col":6,"old":"AXL F DO16/1 1H","new":"AXL F DO16/1 1H, D","user":null}
